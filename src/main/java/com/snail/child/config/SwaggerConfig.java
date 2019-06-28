@@ -1,4 +1,4 @@
-package com.example.huigu.config;
+package com.snail.child.config;
 
 
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.example.huigu.controller"})
+@ComponentScan(basePackages = {"com.snail.child.controller"})
 public class SwaggerConfig {
 
     @Bean

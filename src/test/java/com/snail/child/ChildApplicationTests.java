@@ -1,4 +1,4 @@
-package com.team.snail.child;
+package com.snail.child;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

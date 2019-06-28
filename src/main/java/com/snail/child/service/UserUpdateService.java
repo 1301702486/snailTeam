@@ -1,18 +1,24 @@
-package com.team.snail.child.service;
+package com.snail.child.service;
 
-import com.team.snail.child.entity.Address;
-import com.team.snail.child.entity.User;
-import com.team.snail.child.repository.AddressRepository;
-import com.team.snail.child.repository.UserRepository;
+import com.snail.child.enm.MsgId;
+import com.snail.child.entity.Address;
+import com.snail.child.entity.Result;
+import com.snail.child.entity.User;
+import com.snail.child.repository.AddressRepository;
+import com.snail.child.repository.UserRepository;
+import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: 郭瑞景
  * Date: 2019/6/26
- * Description: No description
+ * Description: No Description
  */
 
 @Service
@@ -27,71 +33,57 @@ public class UserUpdateService {
     /**
      * 添加一个用户
      *
-     * @param emailAddr
-     * @param pwd
-     * @param gender
-     * @param phone
-     * @param date
-     * @param province
-     * @param city
-     * @param county
-     * @param district
-     * @param street
-     * @param detail
+     * @param user
+     * @return
      */
-    public void addUserInfo(String emailAddr, String pwd, String gender, String phone,
-                            Date date, String province, String city, String county,
-                            String district, String street, String detail) {
-
-        User user = new User();
-
-        if (province != null) {
-            Address address = new Address();
-            address.setProvince(province);
-            if (city != null) {
-                address.setCity(city);
-            }
-            if (county != null) {
-                address.setCounty(county);
-            }
-            if (district != null) {
-                address.setDistrict(district);
-            }
-            if (street != null) {
-                address.setStreet(street);
-            }
-            if (detail != null) {
-                address.setDetail(detail);
-            }
-            addressRepository.save(address);
-            user.setAddress(address);
+    public Result addUserInfo(User user) {
+        if (user.getEmailAddr() != null && user.getPassword() != null && user.getAddress() != null) {
+            return ResultUtils.success(userRepository.save(user));
         }
-
-        user.setEmailAddr(emailAddr);
-        user.setPassword(pwd);
-        if (gender != null) {
-            user.setGender(gender);
-        }
-        if (phone != null) {
-            user.setPhone(phone);
-        }
-        if (date != null) {
-            user.setBirthday(date);
-        }
-        userRepository.save(user);
+        return ResultUtils.error(MsgId.NULL_EADDR_AND_PWD_AND_ADDR);
     }
 
 
     /**
-     * 更新用户信息(不包括地址)
+     * 更新用户信息
      *
-     * @param emailAddr
-     * @param pwd
-     * @param gender
-     * @param phone
-     * @param date
+     * @param user
      * @return
      */
+    @Transactional
+    public Result updateUserInfo(User user) {
+        if (user.getEmailAddr() != null) {
+            User user1 = findUserById(user.getEmailAddr());//user1是user的旧值
+            if (user.getPassword() == null) {
+                user.setPassword(user1.getPassword());
+            }
+            if (user.getBirthday() == null && user1.getBirthday() != null) {
+                user.setBirthday(user1.getBirthday());
+            }
+            if (user.getGender() == null && user1.getGender() != null) {
+                user.setGender(user1.getGender());
+            }
+            if (user.getPhone() == null && user1.getPhone() != null) {
+                user.setPhone(user1.getPhone());
+            }
+            if (user.getAddress() == null) {
+                if (user1.getAddress() != null) {
+                    user.setAddress(user1.getAddress());
+                }
+            } else {
+                if (user.getAddress().getProvince() == null) {
+                    return ResultUtils.error(MsgId.NULL_PROVINCE);
+                }
+            }
+            Result result = ResultUtils.success(userRepository.save(user));
+            deleteAddresses();
+            return result;
+        }
+        return ResultUtils.error(MsgId.NO_EMAILADDRESS);
+
+    }
+
+    /*
     public User updateUserById(String emailAddr, String pwd, String gender, String phone, Date date) {
 
         User user = findUserById(emailAddr);
@@ -110,12 +102,12 @@ public class UserUpdateService {
             }
 
             return userRepository.save(user);
-        }
-        else {
+        } else {
             // TODO 用户不存在
             return null;
         }
     }
+    */
 
     /**
      * 按用户名查询一个用户
@@ -128,6 +120,24 @@ public class UserUpdateService {
     }
 
     /**
+     * 删除Address中不再被用户使用的地址
+     */
+    public void deleteAddresses() {
+        List<User> users = userRepository.findAll();
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < users.size(); ++i) {
+            Integer addrId = users.get(i).getAddress().getId();
+            ids.add(addrId);
+        }
+        List<Address> addresses = addressRepository.findAll();
+        for (int j = 0; j < addresses.size(); ++j) {
+            if (!ids.contains(addresses.get(j).getId())) {
+                addressRepository.delete(addresses.get(j));
+            }
+        }
+    }
+
+    /**
      * 删除一个用户
      *
      * @param emailAddr
@@ -136,21 +146,7 @@ public class UserUpdateService {
         userRepository.delete(findUserById(emailAddr));
     }
 
-    /**
-     * 更新用户信息(包括地址)
-     *
-     * @param emailAddr
-     * @param pwd
-     * @param gender
-     * @param phone
-     * @param date
-     * @param province
-     * @param city
-     * @param county
-     * @param district
-     * @param street
-     * @param detail
-     */
+    /*
     public void updateUserInfo(String emailAddr, String pwd, String gender, String phone,
                                Date date, String province, String city, String county,
                                String district, String street, String detail) {
@@ -183,8 +179,7 @@ public class UserUpdateService {
                 // TODO 一开始未填写地址且更新个人信息时更新了地址信息但未填写省份, 报错
                 return;
             }
-        }
-        else if (addr != null) {
+        } else if (addr != null) {
             if (province != null && province != addr.getProvince()) {
                 addr.setProvince(province);
             }
@@ -206,4 +201,5 @@ public class UserUpdateService {
             addressRepository.save(addr);
         }
     }
+    */
 }

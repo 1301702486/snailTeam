@@ -1,4 +1,4 @@
-package com.example.huigu.entity;
+package com.snail.child.entity;
 
 import java.io.Serializable;
 

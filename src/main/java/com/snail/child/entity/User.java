@@ -1,4 +1,4 @@
-package com.team.snail.child.entity;
+package com.snail.child.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -30,7 +30,7 @@ public class User {
     private String gender;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id",nullable = false)
     private Address address;
 
     @Transient   // 表示不存到数据库中

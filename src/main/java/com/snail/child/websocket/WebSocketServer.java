@@ -1,4 +1,4 @@
-package com.example.huigu.websocket;
+package com.snail.child.websocket;
 
 
 

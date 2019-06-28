@@ -1,6 +1,6 @@
-package com.team.snail.child.repository;
+package com.snail.child.repository;
 
-import com.team.snail.child.entity.Address;
+import com.snail.child.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,9 +1,6 @@
-package com.team.snail.child.entity;
+package com.snail.child.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Author: 郭瑞景
@@ -30,6 +27,17 @@ public class Address {
     private String street;
 
     private String detail;
+
+//    @OneToOne(mappedBy = "address",cascade = {CascadeType.MERGE,CascadeType.REFRESH},optional = false)
+//    private User user;
+//
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public Integer getId() {
         return id;

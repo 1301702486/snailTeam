@@ -1,4 +1,4 @@
-package com.example.huigu.config;
+package com.snail.child.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

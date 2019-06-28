@@ -1,6 +1,7 @@
-package com.team.snail.child.controller;
+package com.snail.child.controller;
 
-import com.team.snail.child.service.UserUpdateService;
+import com.snail.child.entity.User;
+import com.snail.child.service.UserUpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class UserUpdateController {
 
 
     @PostMapping(value = "/addUserInfo")
+    /*
     public void addUser(@RequestParam("emailAddr") String emailAddr,
                         @RequestParam("password") String pwd,
                         @RequestParam(value = "gender", required = false) String gender,
@@ -34,23 +36,16 @@ public class UserUpdateController {
 
         userService.addUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
     }
+    */
+    public void addUser(User user) {
 
-    /**
-     * 更新用户信息(包括地址)
-     *
-     * @param emailAddr
-     * @param pwd
-     * @param gender
-     * @param phone
-     * @param date
-     * @param province
-     * @param city
-     * @param county
-     * @param district
-     * @param street
-     * @param detail
-     */
+        userService.addUserInfo(user);
+    }
+
+
+
     @PutMapping(value = "/updateUserInfo")
+    /*
     public void updateUserByEmailAddr(@RequestParam("emailAddr") String emailAddr,
                                       @RequestParam(value = "password", required = false) String pwd,
                                       @RequestParam(value = "gender", required = false) String gender,
@@ -65,6 +60,12 @@ public class UserUpdateController {
 
         userService.updateUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
     }
+    */
+    public void updateUserByEmailAddr(User user) {
+
+        userService.updateUserInfo(user);
+    }
+
 
     /**
      * 删除一个用户

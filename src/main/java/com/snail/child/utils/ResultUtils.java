@@ -1,12 +1,13 @@
-package com.example.huigu.utils;
+package com.snail.child.utils;
 
-import com.example.huigu.enm.MsgId;
-import com.example.huigu.entity.Result;
+
+import com.snail.child.enm.MsgId;
+import com.snail.child.entity.Result;
 
 public class ResultUtils {
 
     //带code和参数的成功
-    public static Result success(MsgId err,Object date){
+    public static Result success(MsgId err, Object date){
         Result result = new Result();
         result.setCode(err.getCode());
         result.setMsg(err.getMsg());
