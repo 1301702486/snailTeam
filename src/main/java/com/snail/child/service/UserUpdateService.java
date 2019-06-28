@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,7 @@ public class UserUpdateService {
      * @param user
      * @return
      */
+    @Transactional
     public Result addUserInfo(User user) {
         if (user.getEmailAddr() != null && user.getPassword() != null && user.getAddress() != null) {
             return ResultUtils.success(userRepository.save(user));
@@ -72,14 +72,18 @@ public class UserUpdateService {
                 }
             } else {
                 if (user.getAddress().getProvince() == null) {
-                    return ResultUtils.error(MsgId.NULL_PROVINCE);
+                    if (user1.getAddress() != null) {
+                        user.getAddress().setProvince(user1.getAddress().getProvince());
+                    } else {
+                        return ResultUtils.error(MsgId.NULL_PROVINCE);
+                    }
                 }
             }
             Result result = ResultUtils.success(userRepository.save(user));
             deleteAddresses();
             return result;
         }
-        return ResultUtils.error(MsgId.NO_EMAILADDRESS);
+        return ResultUtils.error(MsgId.NO_EMAIL_ADDRESS);
 
     }
 
@@ -122,7 +126,7 @@ public class UserUpdateService {
     /**
      * 删除Address中不再被用户使用的地址
      */
-    public void deleteAddresses() {
+    private void deleteAddresses() {
         List<User> users = userRepository.findAll();
         List<Integer> ids = new ArrayList<>();
         for (int i = 0; i < users.size(); ++i) {
@@ -142,8 +146,14 @@ public class UserUpdateService {
      *
      * @param emailAddr
      */
-    public void deleteUserById(String emailAddr) {
-        userRepository.delete(findUserById(emailAddr));
+    public Result deleteUserById(String emailAddr) {
+        if (findUserById(emailAddr) != null) {
+            userRepository.delete(findUserById(emailAddr));
+            return ResultUtils.success(userRepository.findAll());
+        }
+        else {
+            return ResultUtils.error(MsgId.NO_EMAIL_ADDRESS);
+        }
     }
 
     /*

@@ -1,5 +1,6 @@
 package com.snail.child.controller;
 
+import com.snail.child.entity.Result;
 import com.snail.child.entity.User;
 import com.snail.child.service.UserUpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,9 @@ public class UserUpdateController {
         userService.addUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
     }
     */
-    public void addUser(User user) {
+    public Result addUser(User user) {
 
-        userService.addUserInfo(user);
+        return userService.addUserInfo(user);
     }
 
 
@@ -61,9 +62,9 @@ public class UserUpdateController {
         userService.updateUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
     }
     */
-    public void updateUserByEmailAddr(User user) {
+    public Result updateUserByEmailAddr(User user) {
 
-        userService.updateUserInfo(user);
+        return userService.updateUserInfo(user);
     }
 
 
@@ -73,7 +74,7 @@ public class UserUpdateController {
      * @param emailAddr
      */
     @DeleteMapping(value = "/deleteUser")
-    public void deleteUserById(@RequestParam(value = "emailAddr") String emailAddr) {
-        userService.deleteUserById(emailAddr);
+    public Result deleteUserById(@RequestParam(value = "emailAddr") String emailAddr) {
+        return userService.deleteUserById(emailAddr);
     }
 }
