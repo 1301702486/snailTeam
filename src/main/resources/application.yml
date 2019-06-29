@@ -9,4 +9,4 @@ spring:
       ddl-auto: update
     show-sql: true
 server:
-  port: 3389
+  port: 1234

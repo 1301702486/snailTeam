@@ -38,6 +38,19 @@ public class User {
     @Transient   // 表示不存到数据库中
     private int age;   // 导出属性
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(length = 16777215)
+    private byte[] headPortrait;
+
+    public byte[] getHeadPortrait() {
+        return headPortrait;
+    }
+
+    public void setHeadPortrait(byte[] headPortrait) {
+        this.headPortrait = headPortrait;
+    }
+
     public int getAge() {
         return age;
     }
