@@ -20,22 +20,6 @@ public class UserUpdateController {
 
 
     @PostMapping(value = "/addUserInfo")
-    /*
-    public void addUser(@RequestParam("emailAddr") String emailAddr,
-                        @RequestParam("password") String pwd,
-                        @RequestParam(value = "gender", required = false) String gender,
-                        @RequestParam(value = "phone", required = false) String phone,
-                        @RequestParam(value = "birthday", required = false) Date date,
-                        @RequestParam(value = "province", required = false) String province,
-                        @RequestParam(value = "city", required = false) String city,
-                        @RequestParam(value = "county", required = false) String county,
-                        @RequestParam(value = "district", required = false) String district,
-                        @RequestParam(value = "street", required = false) String street,
-                        @RequestParam(value = "detail", required = false) String detail) {
-
-        userService.addUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
-    }
-    */
     public Result addUser(User user) {
 
         return userService.addUserInfo(user);
@@ -44,27 +28,17 @@ public class UserUpdateController {
 
 
     @PutMapping(value = "/updateUserInfo")
-    /*
-    public void updateUserByEmailAddr(@RequestParam("emailAddr") String emailAddr,
-                                      @RequestParam(value = "password", required = false) String pwd,
-                                      @RequestParam(value = "gender", required = false) String gender,
-                                      @RequestParam(value = "phone", required = false) String phone,
-                                      @RequestParam(value = "birthday", required = false) Date date,
-                                      @RequestParam(value = "province", required = false) String province,
-                                      @RequestParam(value = "city", required = false) String city,
-                                      @RequestParam(value = "county", required = false) String county,
-                                      @RequestParam(value = "district", required = false) String district,
-                                      @RequestParam(value = "street", required = false) String street,
-                                      @RequestParam(value = "detail", required = false) String detail) {
-
-        userService.updateUserInfo(emailAddr, pwd, gender, phone, date, province, city, county, district, street, detail);
-    }
-    */
     public Result updateUserByEmailAddr(User user) {
 
         return userService.updateUserInfo(user);
     }
 
+    @PutMapping(value = "/changePassword")
+    public Result changeUserPassword(@RequestParam(value = "emailAddr") String emailAddr,
+                                     @RequestParam(value = "password") String password) {
+
+        return userService.changePassword(emailAddr, password);
+    }
 
     /**
      * 删除一个用户
