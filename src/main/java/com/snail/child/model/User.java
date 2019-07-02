@@ -52,10 +52,15 @@ public class User {
     private ChildFindParent childFindParent;
 
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+    @JoinTable(name="USER_SUSPECTED",
+            joinColumns=@JoinColumn(name="USER_ID"),
+            inverseJoinColumns=@JoinColumn(name="SUSPTECTED_ID"))
     private Set<SuspectedMissingChild> suspectedMissingChildren;
 
+    public User(){
 
+    }
     public byte[] getHeadPortrait() {
         return headPortrait;
     }
@@ -162,7 +167,6 @@ public class User {
 
     }
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     public Set<SuspectedMissingChild> getSuspectedMissingChildren() {
         return suspectedMissingChildren;
     }
@@ -173,8 +177,6 @@ public class User {
 
     public void addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild) {
         this.suspectedMissingChildren.add(suspectedMissingChild);
-//        if(suspectedMissingChild.getUser()!=this){
-//            suspectedMissingChild.setUser(this);
-//        }
+
     }
 }

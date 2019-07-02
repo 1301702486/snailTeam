@@ -110,7 +110,6 @@ public class SuspectedMissingChildService {
                             }
                         }
                     }
-
                     Predicate[] predicate = new Predicate[predicateList.size()];
                     criteriaQuery.where(predicateList.toArray(predicate));
                     return criteriaQuery.getRestriction();

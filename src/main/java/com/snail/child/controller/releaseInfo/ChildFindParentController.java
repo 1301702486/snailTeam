@@ -41,6 +41,7 @@ public class ChildFindParentController {
     public Result addChildFindParent(ChildFindParent childFindParent,
                                      @RequestParam("emailAddr") String emailAddr,
                                      @RequestParam( "releasePhoto") MultipartFile file){
+
                return childFindParentService.addChildFindParent(childFindParent,emailAddr,file);
     }
 
