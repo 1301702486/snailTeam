@@ -3,6 +3,9 @@ package com.snail.child.controller.user;
 import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.service.user.LoginService;
+import com.snail.child.utils.ResultUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,8 @@ import java.util.List;
 @RestController
 public class LoginController {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
     @Autowired
     LoginService service;
 
@@ -29,26 +34,20 @@ public class LoginController {
      * @return
      */
     @RequestMapping("/toLogin")
-    public String toLogin(Model model) {
-        List<User> users = service.getAllUsers();
-        int userCount = users.size();
-        model.addAttribute("userCount", userCount);
-        return "user/login";
+    public Result toLogin(Model model) {
+        return service.getAllUsers();
     }
 
     /**
      * 登录
      *
-     * @param model
      * @param emailAddr
      * @param password
      * @return
      */
     @RequestMapping("/login")
-    public String login(Model model, String emailAddr, String password) {
-        Result result = service.login(emailAddr, password);
-//        model.
-        return "index";
+    public Result login(String emailAddr, String password) {
+        return service.login(emailAddr, password);
     }
 
 }
