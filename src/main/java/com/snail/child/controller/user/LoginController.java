@@ -51,9 +51,4 @@ public class LoginController {
         return "index";
     }
 
-    @RequestMapping("/login")
-    public Result login(User user) {
-        return service.login(user.getEmailAddr(), user.getPassword());
-    }
-
 }
