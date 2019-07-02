@@ -1,6 +1,8 @@
 package com.snail.child.repository;
 
-import com.snail.child.entity.User;
+import com.snail.child.model.ChildFindParent;
+import com.snail.child.model.ParentFindChild;
+import com.snail.child.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.sql.Date;
@@ -22,4 +24,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findAllByBirthdayBefore(Date date);
 
     List<User> findAllByAddress_Id(Integer addressId);
+
+    User findUserByParentFindChild(ParentFindChild parentFindChild);
+
+    User findUserByChildFindParent(ChildFindParent childFindParent);
 }

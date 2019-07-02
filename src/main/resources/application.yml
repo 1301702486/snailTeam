@@ -3,10 +3,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/child?serverTimezone=GMT
     username: root
     password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 server:
-  port: 1234
+  port: 8081

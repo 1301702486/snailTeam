@@ -1,12 +1,10 @@
-package com.snail.child.controller;
+package com.snail.child.controller.user;
 
-import com.snail.child.entity.Result;
-import com.snail.child.entity.User;
-import com.snail.child.service.UserUpdateService;
+import com.snail.child.model.Result;
+import com.snail.child.model.User;
+import com.snail.child.service.user.UserUpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Date;
 
 /**
  * Author: 郭瑞景

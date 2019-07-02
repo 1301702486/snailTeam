@@ -1,12 +1,11 @@
-package com.snail.child.entity;
-
-//import com.fasterxml.jackson.annotation.JsonFormat;
+package com.snail.child.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.Set;
 
 /**
  * Author: 郭瑞景
@@ -26,13 +25,13 @@ public class User {
 
     private String phone;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date birthday;
 
     private String gender;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id",nullable = false)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     @Transient   // 表示不存到数据库中
@@ -42,6 +41,20 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     @Column(length = 16777215)
     private byte[] headPortrait;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "parent_find_child_id")
+    private ParentFindChild parentFindChild;
+
+    @OneToOne//(cascade=CascadeType.ALL)
+    @JoinColumn(name = "child_find_parent_id")
+    private ChildFindParent childFindParent;
+
+
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SuspectedMissingChild> suspectedMissingChildren;
+
 
     public byte[] getHeadPortrait() {
         return headPortrait;
@@ -129,5 +142,39 @@ public class User {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+
+    public ParentFindChild getParentFindChild() {
+        return parentFindChild;
+    }
+
+    public void setParentFindChild(ParentFindChild parentFindChild) {
+        this.parentFindChild = parentFindChild;
+    }
+
+    public ChildFindParent getChildFindParent() {
+        return childFindParent;
+    }
+
+    public void setChildFindParent(ChildFindParent childFindParent) {
+        this.childFindParent = childFindParent;
+
+    }
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    public Set<SuspectedMissingChild> getSuspectedMissingChildren() {
+        return suspectedMissingChildren;
+    }
+
+    public void setSuspectedMissingChildren(Set<SuspectedMissingChild> suspectedMissingChildren) {
+        this.suspectedMissingChildren = suspectedMissingChildren;
+    }
+
+    public void addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild) {
+        this.suspectedMissingChildren.add(suspectedMissingChild);
+//        if(suspectedMissingChild.getUser()!=this){
+//            suspectedMissingChild.setUser(this);
+//        }
     }
 }

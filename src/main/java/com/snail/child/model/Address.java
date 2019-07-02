@@ -1,4 +1,4 @@
-package com.snail.child.entity;
+package com.snail.child.model;
 
 import javax.persistence.*;
 

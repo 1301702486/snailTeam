@@ -1,9 +1,9 @@
-package com.snail.child.service;
+package com.snail.child.service.user;
 
-import com.snail.child.enm.MsgId;
-import com.snail.child.entity.Address;
-import com.snail.child.entity.Result;
-import com.snail.child.entity.User;
+import com.snail.child.enm.MessageGuo;
+import com.snail.child.model.Address;
+import com.snail.child.model.Result;
+import com.snail.child.model.User;
 import com.snail.child.repository.AddressRepository;
 import com.snail.child.repository.UserRepository;
 import com.snail.child.utils.ResultUtils;
@@ -38,9 +38,9 @@ public class UserUpdateService {
     @Transactional
     public Result addUserInfo(User user) {
         if (user.getEmailAddr() != null && user.getPassword() != null && user.getAddress() != null) {
-            return ResultUtils.success(userRepository.save(user));
+            return ResultUtils.send(MessageGuo.SUCCESS, userRepository.save(user));
         }
-        return ResultUtils.error(MsgId.NULL_EADDR_AND_PWD_AND_ADDR);
+        return ResultUtils.send(MessageGuo.NULL_EADDR_AND_PWD_AND_ADDR);
     }
 
 
@@ -75,15 +75,15 @@ public class UserUpdateService {
                     if (user1.getAddress() != null) {
                         user.getAddress().setProvince(user1.getAddress().getProvince());
                     } else {
-                        return ResultUtils.error(MsgId.NULL_PROVINCE);
+                        return ResultUtils.send(MessageGuo.NULL_PROVINCE);
                     }
                 }
             }
-            Result result = ResultUtils.success(userRepository.save(user));
+            Result result = ResultUtils.send(MessageGuo.SUCCESS, userRepository.save(user));
             deleteAddresses();
             return result;
         }
-        return ResultUtils.error(MsgId.NO_EMAIL_ADDRESS);
+        return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
 
     }
 
@@ -149,10 +149,10 @@ public class UserUpdateService {
     public Result deleteUserById(String emailAddr) {
         if (findUserById(emailAddr) != null) {
             userRepository.delete(findUserById(emailAddr));
-            return ResultUtils.success(userRepository.findAll());
+            return ResultUtils.send(MessageGuo.SUCCESS, userRepository.findAll());
         }
         else {
-            return ResultUtils.error(MsgId.NO_EMAIL_ADDRESS);
+            return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
         }
     }
 

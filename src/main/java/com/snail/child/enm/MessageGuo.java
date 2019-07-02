@@ -1,16 +1,18 @@
 package com.snail.child.enm;
 
-public enum MsgId {
+import com.snail.child.model.Message;
+
+public enum MessageGuo implements Message {
     NULL_EADDR_AND_PWD_AND_ADDR(201,"必须输入邮箱地址和密码"),
     NO_EMAIL_ADDRESS(202,"邮箱地址不存在"),
     NULL_PROVINCE(203,"省份不存在"),
+    SUCCESS(0,"成功!"),
     ;
-
 
     private Integer code;
     private String msg;
 
-    MsgId(Integer code, String msg) {
+    MessageGuo(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
@@ -23,11 +25,11 @@ public enum MsgId {
         this.code = code;
     }
 
-    public String getMsg() {
+    public String getMessage() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public void setMessage(String msg) {
         this.msg = msg;
     }
 }
