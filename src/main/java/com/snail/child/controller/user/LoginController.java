@@ -3,15 +3,13 @@ package com.snail.child.controller.user;
 import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.service.user.LoginService;
-import com.snail.child.utils.ResultUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,32 +20,32 @@ import java.util.List;
 @RestController
 public class LoginController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-
     @Autowired
-    LoginService service;
+    LoginService loginService;
 
-    /**
-     * 跳转到登录界面
-     *
-     * @param model
-     * @return
-     */
-    @RequestMapping("/toLogin")
-    public Result toLogin(Model model) {
-        return service.getAllUsers();
-    }
+//    /**
+//     * 跳转到登录界面
+//     *
+//     * @param model
+//     * @return
+//     */
+//    @RequestMapping("/toLogin")
+//    public String toLogin(Model model) {
+//        List<User> users = service.getAllUsers();
+//        int userCount = users.size();
+//        model.addAttribute("userCount", userCount);
+//        return "user/login";
+//    }
 
-    /**
-     * 登录
-     *
-     * @param emailAddr
-     * @param password
-     * @return
-     */
+
     @RequestMapping("/login")
-    public Result login(String emailAddr, String password) {
-        return service.login(emailAddr, password);
+    public void login(@RequestParam("emailAddr") String emailAddr,
+                      @RequestParam("password") String password,
+                      HttpServletResponse response) throws IOException{
+        Result result = loginService.login(emailAddr, password);
+        if (result.getCode().equals(0)) {
+            response.sendRedirect("http://www.baidu.com");
+        }
     }
 
 }
