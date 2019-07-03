@@ -41,7 +41,7 @@ public class RegisterService {
         userRepository.save(user);
         EmailUtils sendEmail = new EmailUtils();
         String url = StringsChen.PATH +
-                "/registerConfirm?" +
+                "/login?" +
                 "emailAddr=" + emailAddr+
                 "&password="+password;
         String content = "<h1>" + StringsChen.CLICK_TO_REGISTER + "</h1>" +

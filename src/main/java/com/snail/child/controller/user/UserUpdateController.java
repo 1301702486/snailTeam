@@ -6,6 +6,8 @@ import com.snail.child.service.user.UserUpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Author: 郭瑞景
  * Date: 2019/6/26
@@ -19,11 +21,12 @@ public class UserUpdateController {
     UserUpdateService userService;
 
 
-    @PostMapping(value = "/addUserInfo")
-    public Result addUser(User user) {
-
-        return userService.addUserInfo(user);
-    }
+//    @PostMapping(value = "/addUserInfo")
+//    public Result addUser(User user, HttpServletRequest request) {
+//        Result result = userService.addUserInfo(user);
+//
+//        return result;
+//    }
 
 
 

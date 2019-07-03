@@ -4,11 +4,12 @@ import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.service.user.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -20,35 +21,31 @@ import java.util.List;
 public class LoginController {
 
     @Autowired
-    LoginService service;
+    LoginService loginService;
 
-    /**
-     * 跳转到登录界面
-     *
-     * @param model
-     * @return
-     */
-    @RequestMapping("/toLogin")
-    public String toLogin(Model model) {
-        List<User> users = service.getAllUsers();
-        int userCount = users.size();
-        model.addAttribute("userCount", userCount);
-        return "user/login";
-    }
+//    /**
+//     * 跳转到登录界面
+//     *
+//     * @param model
+//     * @return
+//     */
+//    @RequestMapping("/toLogin")
+//    public String toLogin(Model model) {
+//        List<User> users = service.getAllUsers();
+//        int userCount = users.size();
+//        model.addAttribute("userCount", userCount);
+//        return "user/login";
+//    }
 
-    /**
-     * 登录
-     *
-     * @param model
-     * @param emailAddr
-     * @param password
-     * @return
-     */
+
     @RequestMapping("/login")
-    public String login(Model model, String emailAddr, String password) {
-        Result result = service.login(emailAddr, password);
-//        model.
-        return "index";
+    public void login(@RequestParam("emailAddr") String emailAddr,
+                      @RequestParam("password") String password,
+                      HttpServletResponse response) throws IOException{
+        Result result = loginService.login(emailAddr, password);
+        if (result.getCode().equals(0)) {
+            response.sendRedirect("http://www.baidu.com");
+        }
     }
 
 }
