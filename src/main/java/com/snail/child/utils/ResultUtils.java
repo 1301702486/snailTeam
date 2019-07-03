@@ -20,4 +20,11 @@ public class ResultUtils {
         System.out.println(message.getMessage());
         return result;
     }
+
+    public static Result send(Object data){
+        Result result = new Result();
+        result.setData(data);
+        logger.info(data.toString());
+        return result;
+    }
 }

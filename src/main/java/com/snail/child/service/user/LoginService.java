@@ -45,8 +45,9 @@ public class LoginService {
      *
      * @return
      */
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public Result getAllUsers(){
+        List<User> users=userRepository.findAll();
+        return ResultUtils.send(users.size());
     }
 
 }
