@@ -9,12 +9,12 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: true
-
     redis:
       host: localhost #redi主机地址
       port: 6379
     session:
       store-type: redis # spring session使用存储类型，spirngboot默认就是使用redis方式，如果不想用可以填none。
+
 server:
   port: 8081
 

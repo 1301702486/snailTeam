@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * User: ZhangXinrui
  * Date: 2019/6/30
@@ -23,15 +25,17 @@ public class SuspectedMissingChildController {
 
     @ApiOperation("添加疑似流浪儿童信息")
     @PostMapping(value = "/addSuspectedMissingChild")
-    public Result addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild,
-                                           @RequestParam("emailAddr") String emailAddr,
+    public Result addSuspectedMissingChild(HttpServletRequest request,
+                                           SuspectedMissingChild suspectedMissingChild,
                                            @RequestParam("releasePhoto") MultipartFile file){
+        String emailAddr=request.getSession().getAttribute("emailAddr").toString();
         return suspectedMissingChildService.addSuspectedMissingChild(suspectedMissingChild,emailAddr,file);
     }
 
     @ApiOperation("删除疑似流浪儿童信息")
     @DeleteMapping("deleteSuspectedMissingChild")
-    public Result deleteSuspectedMissingChild(Integer id,String emailAddr){
+    public Result deleteSuspectedMissingChild(Integer id,HttpServletRequest request){
+        String emailAddr=request.getSession().getAttribute("emailAddr").toString();
         return suspectedMissingChildService.deleteSuspectedMissingParent(id,emailAddr);
     }
 

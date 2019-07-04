@@ -4,10 +4,11 @@ import com.snail.child.model.Result;
 import com.snail.child.service.user.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Author: 陈一
@@ -20,29 +21,14 @@ public class RegisterController {
     @Autowired
     RegisterService service;
 
-    /**
-     * 跳转到注册界面
-     *
-     * @return
-     */
-    @RequestMapping("/toRegister")
-    public String toRegister() {
-        return "user/register";
-    }
 
-    /**
-     * 注册
-     *
-     * @param model
-     * @param emailAddr
-     * @param password
-     * @return
-     */
-    @RequestMapping("/register")
-    public String register(Model model, String emailAddr, String password) {
+    @PostMapping("/register")
+    public Result register(String emailAddr, String password, HttpServletRequest request) {
         Result result = service.register(emailAddr, password);
-        model.addAttribute("info", result.getMessage());
-        return "info";
+        HttpSession session = request.getSession();
+        session.setAttribute("userName", emailAddr);
+        session.setAttribute("password", password);
+        return result;
     }
 
     /**
@@ -54,8 +40,8 @@ public class RegisterController {
      */
     public String registerConfirm(Model model,
                                   @RequestParam(value = "emailAddr") String emailAddr,
-                                  @RequestParam(value = "password") String password){
-        Result result=service.registerConfirm(emailAddr,password);
+                                  @RequestParam(value = "password") String password) {
+        Result result = service.registerConfirm(emailAddr, password);
         model.addAttribute("info", result.getMessage());
         return "index";
     }
@@ -68,7 +54,7 @@ public class RegisterController {
      * @param file
      * @return
      */
-    @RequestMapping("/testForLoginSuccess")
+    @PostMapping("/testForLoginSuccess")
     public Result testForLoginSuccess(@RequestParam(value = "emailAddr") String emailAddr,
                                       @RequestParam(value = "password") String password,
                                       @RequestParam(value = "headPortrait") MultipartFile file) {
