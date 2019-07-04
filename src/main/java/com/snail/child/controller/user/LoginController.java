@@ -4,7 +4,6 @@ import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.service.user.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,12 +38,14 @@ public class LoginController {
 //    }
 
 
-    @PostMapping("/login")
-    public  Result login(@RequestParam("emailAddr") String emailAddr,
+    @RequestMapping("/login")
+    public void login(@RequestParam("emailAddr") String emailAddr,
                       @RequestParam("password") String password,
                       HttpServletResponse response) throws IOException{
         Result result = loginService.login(emailAddr, password);
-        return result;
+        if (result.getCode().equals(0)) {
+            response.sendRedirect("http://www.baidu.com");
+        }
     }
 
 }

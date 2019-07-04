@@ -90,16 +90,16 @@ public class RegisterService {
         return result;
     }
 
-    /**
-     * 删除用户
-     *
-     * @param emailAddr
-     * @return
-     */
-    public Result deleteUser(String emailAddr){
-        User user = userRepository.findUserByEmailAddr(emailAddr);
-        userRepository.delete(user);
-        return ResultUtils.send(MessageChen.USER_DELETE);
-    }
+//    /**
+//     * 删除用户
+//     *
+//     * @param emailAddr
+//     * @return
+//     */
+//    public Result deleteUser(String emailAddr){
+//        User user = userRepository.findUserByEmailAddr(emailAddr);
+//        userRepository.delete(user);
+//        return ResultUtils.send(MessageChen.USER_DELETE);
+//    }
 
 }

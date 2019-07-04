@@ -50,41 +50,71 @@ public class UserUpdateService {
      * @param user
      * @return
      */
-    @Transactional
-    public Result updateUserInfo(User user) {
-        if (user.getEmailAddr() != null) {
-            User user1 = findUserById(user.getEmailAddr());//user1是user的旧值
-            if (user.getPassword() == null) {
-                user.setPassword(user1.getPassword());
-            }
-            if (user.getBirthday() == null && user1.getBirthday() != null) {
-                user.setBirthday(user1.getBirthday());
-            }
-            if (user.getGender() == null && user1.getGender() != null) {
-                user.setGender(user1.getGender());
-            }
-            if (user.getPhone() == null && user1.getPhone() != null) {
-                user.setPhone(user1.getPhone());
-            }
-            if (user.getAddress() == null) {
-                if (user1.getAddress() != null) {
-                    user.setAddress(user1.getAddress());
-                }
-            } else {
-                if (user.getAddress().getProvince() == null) {
-                    if (user1.getAddress() != null) {
-                        user.getAddress().setProvince(user1.getAddress().getProvince());
-                    } else {
-                        return ResultUtils.send(MessageGuo.NULL_PROVINCE);
-                    }
-                }
-            }
-            Result result = ResultUtils.send(MessageGuo.SUCCESS, userRepository.save(user));
-            deleteAddresses();
-            return result;
-        }
-        return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
+//    @Transactional
+//    public Result updateUserInfo(User user) {
+//        if (user.getEmailAddr() != null) {
+//            User user1 = findUserById(user.getEmailAddr());//user1是user的旧值
+//            if (user.getPassword() == null) {
+//                user.setPassword(user1.getPassword());
+//            }
+//            if (user.getBirthday() == null && user1.getBirthday() != null) {
+//                user.setBirthday(user1.getBirthday());
+//            }
+//            if (user.getGender() == null && user1.getGender() != null) {
+//                user.setGender(user1.getGender());
+//            }
+//            if (user.getPhone() == null && user1.getPhone() != null) {
+//                user.setPhone(user1.getPhone());
+//            }
+//            if (user.getAddress() == null) {
+//                if (user1.getAddress() != null) {
+//                    user.setAddress(user1.getAddress());
+//                }
+//            } else {
+//                if (user.getAddress().getProvince() == null) {
+//                    if (user1.getAddress() != null) {
+//                        user.getAddress().setProvince(user1.getAddress().getProvince());
+//                    } else {
+//                        return ResultUtils.send(MessageGuo.NULL_PROVINCE);
+//                    }
+//                }
+//            }
+//            Result result = ResultUtils.send(MessageGuo.SUCCESS, userRepository.save(user));
+//            deleteAddresses();
+//            return result;
+//        }
+//        return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
+//
+//    }
 
+    @Transactional
+    public Result updateUserInfo(User user, String emailAddr) {
+        User user1 = findUserById(emailAddr);   // user1是user的旧值
+        if (user.getBirthday() == null && user1.getBirthday() != null) {
+            user.setBirthday(user1.getBirthday());
+        }
+        if (user.getGender() == null && user1.getGender() != null) {
+            user.setGender(user1.getGender());
+        }
+        if (user.getPhone() == null && user1.getPhone() != null) {
+            user.setPhone(user1.getPhone());
+        }
+        if (user.getAddress() == null) {
+            if (user1.getAddress() != null) {
+                user.setAddress(user1.getAddress());
+            }
+        } else {
+            if (user.getAddress().getProvince() == null) {
+                if (user1.getAddress() != null) {
+                    user.getAddress().setProvince(user1.getAddress().getProvince());
+                } else {
+                    return ResultUtils.send(MessageGuo.NULL_PROVINCE);
+                }
+            }
+        }
+        Result result = ResultUtils.send(MessageGuo.SUCCESS, userRepository.save(user));
+        deleteAddresses();
+        return result;
     }
 
     /**
