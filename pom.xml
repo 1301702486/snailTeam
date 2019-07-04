@@ -77,7 +77,7 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
         </dependency>
-<<<<<<< HEAD
+
         <!-- Start: mail -->
         <!--redis 依赖-->
         <dependency>
@@ -88,12 +88,11 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
-=======
+        </dependency>
         <!-- End: mail -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
->>>>>>> 2da95bfda8eb46b2fe23318972e553284f491c90
         </dependency>
 
     </dependencies>
