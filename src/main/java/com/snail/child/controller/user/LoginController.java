@@ -41,18 +41,18 @@ public class LoginController {
 
 
     @RequestMapping("/login")
-    public void login(@RequestParam("emailAddr") String emailAddr,
+    public Result login(@RequestParam("emailAddr") String emailAddr,
                       @RequestParam("password") String password,
-                      HttpServletResponse response, HttpServletRequest request) throws IOException {
+                      HttpServletRequest request) throws IOException {
 
         Result result = loginService.login(emailAddr, password);
         if (result.getCode().equals(0)) {
             HttpSession session = request.getSession();
             session.setAttribute("emailAddr", emailAddr);
             session.setAttribute("password", password);
-            // TODO: 跳转到主页
-            response.sendRedirect("http://www.baidu.com");
+            System.out.println(session.getId());
         }
+        return result;
     }
 
 }
