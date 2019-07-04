@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: ZhangXinrui
@@ -37,32 +39,31 @@ public class ParentFindChildController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
     }
 
-    @RequestMapping("/test/cookie")
-    public String cookie(@RequestParam("browser") String browser, HttpServletRequest request, HttpSession session) {
-        //取出session中的browser
-        Object sessionBrowser = session.getAttribute("browser");
-        if (sessionBrowser == null) {
-            System.out.println("不存在session，设置browser=" + browser);
-            session.setAttribute("browser", browser);
-        } else {
-            System.out.println("存在session，browser=" + sessionBrowser.toString());
-        }
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName() + " : " + cookie.getValue());
-            }
-        }
-        return "index";
+    @ResponseBody
+    @RequestMapping(value = "/session")
+    public Map<String, Object> getSession(HttpServletRequest request) {
+        request.getSession().setAttribute("userName", "1234");
+        Map<String, Object> map = new HashMap<>();
+        map.put("sessionId", request.getSession().getId());
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/get")
+    public String get(HttpServletRequest request) {
+        String userName = (String) request.getSession().getAttribute("userName");
+        return userName;
     }
 
 
     @ApiOperation(value = "发布家长找孩子的信息")
     @PostMapping(value="/addParentFindChild")
-    public Result addParentFindChild(ParentFindChild parentFindChild,
+    public Result addParentFindChild(HttpServletRequest request,ParentFindChild parentFindChild,
                                      @RequestParam("emailAddr") String emailAddr,
                                      @RequestParam("releasePhoto") MultipartFile file) {
-        return parentFindChildService.addParentFindChild(parentFindChild,emailAddr,file);
+        HttpSession session=request.getSession();
+        String username=(String)request.getSession().getAttribute("emailAddr");
+        return parentFindChildService.addParentFindChild(request,parentFindChild,emailAddr,file);
     }
 
     @ApiOperation(value="更新家长找孩子信息" )

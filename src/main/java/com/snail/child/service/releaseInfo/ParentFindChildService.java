@@ -19,6 +19,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,16 +48,22 @@ public class ParentFindChildService {
      * @param file
      * @return
      */
-    public Result addParentFindChild(ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
+    public Result addParentFindChild(HttpServletRequest request,ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
+        HttpSession session=request.getSession();
+        String username=(String)request.getSession().getAttribute("emailAddr");
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (user.getParentFindChild() == null) {
-            byte[] photo = new byte[0];
-            try {
-                photo = file.getBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            parentFindChild.setPhoto(photo);
+        if (user.getParentFindChild() == null&&!file.isEmpty()) {
+//            byte[] photo = new byte[0];
+//            try {
+//                photo = file.getBytes();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            parentFindChild.setPhoto(photo);
+
+
+
+
             user.setParentFindChild(parentFindChild);
             parentFindChildRepository.save(parentFindChild);
             userRepository.save(user);

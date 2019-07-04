@@ -32,11 +32,20 @@ public class ParentFindChild {
     @Column(nullable = false)
     private String gender;//性别
 
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(length = 16777215,nullable = false)
     private byte[] photo;//图片
 
+    //private String photo;
 
     @OneToOne(cascade= CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
@@ -93,13 +102,13 @@ public class ParentFindChild {
         this.gender = gender;
     }
 
-    public byte[] getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
-    }
+//    public String getPhoto() {
+//        return photo;
+//    }
+//
+//    public void setPhoto(String photo) {
+//        this.photo = photo;
+//    }
 
     public Address getMissingAddress() {
         return missingAddress;

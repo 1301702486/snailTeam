@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -46,8 +47,13 @@ public class LoginController {
      * @return
      */
     @RequestMapping("/login")
-    public Result login(String emailAddr, String password) {
-        return service.login(emailAddr, password);
+    public Result login(String emailAddr, String password, HttpServletRequest request) {
+       // String username=(String)request.getSession().getAttribute("emailAddr");
+        Result result=service.login(emailAddr, password);
+        if(result.getCode()==0){
+            request.setAttribute("emailAddr",emailAddr);
+        }
+        return result;
     }
 
 }
