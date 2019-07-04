@@ -77,7 +77,11 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
         </dependency>
-        <!-- Start: mail -->
+        <!-- End: mail -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
 
     </dependencies>
 

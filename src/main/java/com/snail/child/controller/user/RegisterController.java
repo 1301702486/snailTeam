@@ -61,15 +61,15 @@ public class RegisterController {
         return service.testForLoginSuccess(emailAddr, password, file);
     }
 
-    /**
-     * 删除用户
-     *
-     * @param emailAddr
-     * @return
-     */
-    @RequestMapping("/deleteUser")
-    public Result deleteUser(@RequestParam(value = "emailAddr") String emailAddr) {
-        return service.deleteUser(emailAddr);
-    }
+//    /**
+//     * 删除用户
+//     *
+//     * @param emailAddr
+//     * @return
+//     */
+//    @RequestMapping("/deleteUser")
+//    public Result deleteUser(@RequestParam(value = "emailAddr") String emailAddr) {
+//        return service.deleteUser(emailAddr);
+//    }
 
 }

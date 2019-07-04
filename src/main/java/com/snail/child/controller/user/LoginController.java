@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,9 +43,14 @@ public class LoginController {
     @RequestMapping("/login")
     public void login(@RequestParam("emailAddr") String emailAddr,
                       @RequestParam("password") String password,
-                      HttpServletResponse response) throws IOException{
+                      HttpServletResponse response, HttpServletRequest request) throws IOException {
+
         Result result = loginService.login(emailAddr, password);
         if (result.getCode().equals(0)) {
+            HttpSession session = request.getSession();
+            session.setAttribute("emailAddr", emailAddr);
+            session.setAttribute("password", password);
+            // TODO: 跳转到主页
             response.sendRedirect("http://www.baidu.com");
         }
     }

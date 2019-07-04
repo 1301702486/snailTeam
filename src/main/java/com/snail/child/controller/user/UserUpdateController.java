@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Author: 郭瑞景
@@ -21,35 +22,43 @@ public class UserUpdateController {
     UserUpdateService userService;
 
 
-//    @PostMapping(value = "/addUserInfo")
-//    public Result addUser(User user, HttpServletRequest request) {
-//        Result result = userService.addUserInfo(user);
-//
-//        return result;
-//    }
-
-
-
     @PutMapping(value = "/updateUserInfo")
-    public Result updateUserByEmailAddr(User user) {
-
-        return userService.updateUserInfo(user);
+    public Result updateUserByEmailAddr(User user, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String emailAddr = session.getAttribute("emailAddr").toString();
+        Result result = userService.updateUserInfo(user, emailAddr);
+        // TODO: 跳转到主页
+        return result;
     }
 
     @PutMapping(value = "/changePassword")
     public Result changeUserPassword(@RequestParam(value = "emailAddr") String emailAddr,
-                                     @RequestParam(value = "password") String password) {
+                                     @RequestParam(value = "password") String password,
+                                     HttpServletRequest request) {
 
-        return userService.changePassword(emailAddr, password);
+        Result result = userService.changePassword(emailAddr, password);
+        if (result.getCode().equals(0)) {
+            HttpSession session = request.getSession();
+            session.setAttribute("password", password);
+        }
+        // TODO: 跳转到主页
+        return result;
     }
 
     /**
-     * 删除一个用户
+     * 注销
      *
-     * @param emailAddr
+     * @param request
      */
     @DeleteMapping(value = "/deleteUser")
-    public Result deleteUserById(@RequestParam(value = "emailAddr") String emailAddr) {
-        return userService.deleteUserById(emailAddr);
+    public Result deleteUserById(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String emailAddr = session.getAttribute("emailAddr").toString();
+        Result result = userService.deleteUserById(emailAddr);
+        if (result.getCode().equals(0)) {
+            session.invalidate();
+        }
+        // TODO: 跳转到主页
+        return result;
     }
 }
