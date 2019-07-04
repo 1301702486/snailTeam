@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,16 +40,17 @@ public class ChildFindParentController {
     @ApiOperation(value="发布孩子找家长信息")
     @PostMapping("/addChildFindParent")
     public Result addChildFindParent(ChildFindParent childFindParent,
-                                     @RequestParam("emailAddr") String emailAddr,
+                                     HttpServletRequest request,
                                      @RequestParam( "releasePhoto") MultipartFile file){
-
+                String emailAddr=request.getSession().getAttribute("emailAddr").toString();
                return childFindParentService.addChildFindParent(childFindParent,emailAddr,file);
     }
 
     @ApiOperation(value = "删除孩子找家长信息")
     @DeleteMapping("/deleteChildFindParent")
-    public Result deleteChildFindParent(@RequestParam("id") Integer id){
-        return childFindParentService.deleteChildFindParent(id);
+    public Result deleteChildFindParent(HttpServletRequest request){
+        String emailAddr=request.getSession().getAttribute("emailAddr").toString();
+        return childFindParentService.deleteChildFindParent(emailAddr);
     }
 
     @ApiOperation(value="查询孩子找父母的信息")

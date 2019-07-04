@@ -7,6 +7,7 @@ import com.snail.child.model.SuspectedMissingChild;
 import com.snail.child.model.User;
 import com.snail.child.repository.SuspectedMissingChildRepository;
 import com.snail.child.repository.UserRepository;
+import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,13 +51,9 @@ public class SuspectedMissingChildService {
     @Transactional
     public Result addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        byte[] photo = new byte[0];
-        try {
-            photo = file.getBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!file.isEmpty()){
+            suspectedMissingChild.setPhoto(PhotoUtils.uploadPhoto(file));
         }
-        suspectedMissingChild.setPhoto(photo);
         user.addSuspectedMissingChild(suspectedMissingChild);
         userRepository.save(user);
         return ResultUtils.send(MessageXin.SUCCESS, suspectedMissingChild);
@@ -73,7 +70,6 @@ public class SuspectedMissingChildService {
         SuspectedMissingChild suspectedMissingChild = suspectedMissingChildRepository.findSuspectedMissingChildById(id);
         if (suspectedMissingChild != null) {
             User user=userRepository.findUserByEmailAddr(emailAddr);
-           // User user = suspectedMissingChild.getUser();
             user.getSuspectedMissingChildren().remove(suspectedMissingChild);
             suspectedMissingChildRepository.delete(suspectedMissingChild);
             return ResultUtils.send(MessageXin.SUCCESS, userRepository.save(user));

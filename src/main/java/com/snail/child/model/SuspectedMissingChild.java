@@ -18,11 +18,12 @@ public class SuspectedMissingChild {
     @Column(nullable = false)
     private Integer height;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(length = 16777215, nullable = false)
-    private byte[] photo;
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+//    @Column(length = 16777215, nullable = false)
+//    private byte[] photo;
 
+    private String photo;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
@@ -46,11 +47,11 @@ public class SuspectedMissingChild {
         this.height = height;
     }
 
-    public byte[] getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 

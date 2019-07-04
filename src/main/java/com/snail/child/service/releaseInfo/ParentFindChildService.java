@@ -8,8 +8,10 @@ import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.repository.ParentFindChildRepository;
 import com.snail.child.repository.UserRepository;
+import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,10 +21,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * User: ZhangXinrui
@@ -46,21 +52,15 @@ public class ParentFindChildService {
      * @param file
      * @return
      */
-    public Result addParentFindChild(ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
+    public Result addParentFindChild(HttpServletRequest request,ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (user.getParentFindChild() == null) {
-            byte[] photo = new byte[0];
-            try {
-                photo = file.getBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            parentFindChild.setPhoto(photo);
-            user.setParentFindChild(parentFindChild);
-            parentFindChildRepository.save(parentFindChild);
-            userRepository.save(user);
-            return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
-        } else {
+        if (user.getParentFindChild() == null&&!file.isEmpty()) {
+            parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
+                user.setParentFindChild(parentFindChild);
+                parentFindChildRepository.save(parentFindChild);
+                userRepository.save(user);
+                return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
+        }else {
             return ResultUtils.send(MessageXin.PARENTFINDCHILD_HAS_EXIST);
         }
     }
@@ -72,10 +72,10 @@ public class ParentFindChildService {
      * @return
      */
     @Transactional
-    public Result deleteParentFindChild(Integer id) {
-        ParentFindChild parentFindChild = parentFindChildRepository.findParentFindChildById(id);
+    public Result deleteParentFindChild(String emailAddr) {
+        User user=userRepository.findUserByEmailAddr(emailAddr);
+        ParentFindChild parentFindChild = user.getParentFindChild();
         if (parentFindChild != null) {
-            User user = userRepository.findUserByParentFindChild(parentFindChild);
             user.setParentFindChild(null);
             parentFindChildRepository.delete(parentFindChild);
             parentFindChildRepository.findAll();
@@ -91,7 +91,10 @@ public class ParentFindChildService {
      * @param parentFindChild
      * @return
      */
-    public Result updateParentFindChild(ParentFindChild parentFindChild) {
+    public Result updateParentFindChild(ParentFindChild parentFindChild,MultipartFile file) {
+        if (!file.isEmpty()) {
+           parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
+        }
         return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
     }
 
@@ -146,31 +149,5 @@ public class ParentFindChildService {
             return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.findAll(page));
         }
     }
-
-
-//
-//    @Override
-//    public Page<Student> search(final Student student, PageInfo page) {
-//        return studentRepository.findAll(new Specification<Student>() {
-//            @Override
-//            public Predicate toPredicate(Root<Student> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-//
-//                Predicate stuNameLike = null;
-//                if(null != student && !StringUtils.isEmpty(student.getName())) {
-//                    stuNameLike = cb.like(root.<String> get("name"), "%" + student.getName() + "%");
-//                }
-//
-//                Predicate clazzNameLike = null;
-//                if(null != student && null != student.getClazz() && !StringUtils.isEmpty(student.getClazz().getName())) {
-//                    clazzNameLike = cb.like(root.<String> get("clazz").<String> get("name"), "%" + student.getClazz().getName() + "%");
-//                }
-//
-//                if(null != stuNameLike) query.where(stuNameLike);
-//                if(null != clazzNameLike) query.where(clazzNameLike);
-//                return null;
-//            }
-//        }, new PageRequest(page.getPage() - 1, page.getLimit(), new Sort(Direction.DESC, page.getSortName())));
-//    }
-
 
 }

@@ -8,6 +8,7 @@ import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.repository.ChildFindParentRepository;
 import com.snail.child.repository.UserRepository;
+import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,10 +20,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * User: ZhangXinrui
@@ -51,37 +55,28 @@ public class ChildFindParentService {
     public Result addChildFindParent(ChildFindParent childFindParent, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
         if (user.getChildFindParent() == null) {
-            byte[] photo = new byte[0];
-            try {
-                photo = file.getBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            childFindParent.setPhoto(photo);
+            childFindParent.setPhoto(PhotoUtils.uploadPhoto(file));
             user.setChildFindParent(childFindParent);
-            ChildFindParent child = childFindParentRepository.save(childFindParent);
+            childFindParentRepository.save(childFindParent);
             userRepository.save(user);
             return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.save(childFindParent));
         } else {
             return ResultUtils.send(MessageXin.CHILDFINDPARENT_HAS_EXIST);
         }
-
     }
 
     /**
-     * 删除孩子寻找父母的信息
-     *
-     * @param id
+     * 删除家长寻找孩子的发布信息
+     * @param emailAddr
      * @return
      */
     @Transactional
-    public Result deleteChildFindParent(Integer id) {
-        ChildFindParent childFindParent = childFindParentRepository.findChildFindParentById(id);
+    public Result deleteChildFindParent(String emailAddr) {
+        User user=userRepository.findUserByEmailAddr(emailAddr);
+        ChildFindParent childFindParent = user.getChildFindParent();
         if (childFindParent != null) {
-            User user = userRepository.findUserByChildFindParent(childFindParent);
             user.setChildFindParent(null);
             childFindParentRepository.delete(childFindParent);
-            //user.setChildFindParent(null);
             return ResultUtils.send(MessageXin.SUCCESS, userRepository.save(user));
         } else {
             return ResultUtils.send(MessageXin.CHILDFINDPARENT_NOT_EXIST);
@@ -96,15 +91,8 @@ public class ChildFindParentService {
      * @return
      */
     public Result updateChildFindParent(ChildFindParent childFindParent, MultipartFile file) {
-
         if (!file.isEmpty()) {
-            byte[] photo = new byte[0];
-            try {
-                photo = file.getBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            childFindParent.setPhoto(photo);
+            childFindParent.setPhoto(PhotoUtils.uploadPhoto(file));
         }
         return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.save(childFindParent));
     }
@@ -161,5 +149,8 @@ public class ChildFindParentService {
             return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.findAll(page));
         }
     }
+
+
+
 }
 
