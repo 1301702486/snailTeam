@@ -42,10 +42,10 @@ public class RegisterService {
         EmailUtils sendEmail = new EmailUtils();
         String url = StringsChen.PATH +
                 "/login?" +
-                "emailAddr=" + emailAddr+
-                "&password="+password;
+                "emailAddr=" + emailAddr +
+                "&password=" + password;
         String content = "<h1>" + StringsChen.CLICK_TO_REGISTER + "</h1>" +
-                "<a href=\""+url+"\">验证</a>";
+                "<a href=\"" + url + "\">验证</a>";
         sendEmail.sendMessage(emailAddr, StringsChen.REGISTER_CONFIRM, content);
         return ResultUtils.send(MessageChen.GO_CONFIRM);
     }
@@ -57,8 +57,8 @@ public class RegisterService {
      * @param password
      * @return
      */
-    public Result registerConfirm(String emailAddr, String password){
-        User user=new User();
+    public Result registerConfirm(String emailAddr, String password) {
+        User user = new User();
         user.setEmailAddr(emailAddr);
         user.setPassword(password);
         userRepository.save(user);

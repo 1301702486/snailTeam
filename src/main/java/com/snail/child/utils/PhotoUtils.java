@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -13,7 +14,19 @@ import java.util.UUID;
  */
 public class PhotoUtils {
 
-    private static String uploadDir=System.getProperty("user.dir") + "/uploadingDir/";
+    //private static String uploadDir=System.getProperty("user.dir") + "/uploadingDir/";
+
+    private static String uploadDir = "D:/upload/";
+
+    private static String path(){
+        String path="";
+        try {
+            path=InetAddress.getLocalHost().toString() + ":8082/images/";
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return path;
+    }
 
     public static String uploadPhoto(MultipartFile file) {
         // 获取文件名
@@ -38,7 +51,7 @@ public class PhotoUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return filePath+fileName;
+        return path() + fileName;
     }
 
 }

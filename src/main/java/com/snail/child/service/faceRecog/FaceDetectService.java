@@ -93,7 +93,7 @@ public class FaceDetectService {
         if (user != null) {
             Set<SuspectedMissingChild> children = user.getSuspectedMissingChildren();
             if (!children.isEmpty()) {
-                for (SuspectedMissingChild child: children) {
+                for (SuspectedMissingChild child : children) {
                     if (child.getId().equals(id)) {
 //                        return child.getPhoto();
                     }
@@ -204,9 +204,10 @@ public class FaceDetectService {
 
     public static String getFaceToken(String faceString) {
         try {
-            Map<String, Object> map = new Gson().fromJson(faceString, new TypeToken<HashMap<String, Object>>() {}.getType());
+            Map<String, Object> map = new Gson().fromJson(faceString, new TypeToken<HashMap<String, Object>>() {
+            }.getType());
             ArrayList<Object> faces = (ArrayList<Object>) map.get("faces");
-            LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>)faces.get(0);
+            LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>) faces.get(0);
             String faceToken = treeMap.get("face_token").toString();
             return faceToken;
         } catch (Exception e) {

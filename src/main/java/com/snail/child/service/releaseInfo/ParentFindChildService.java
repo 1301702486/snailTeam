@@ -52,28 +52,28 @@ public class ParentFindChildService {
      * @param file
      * @return
      */
-    public Result addParentFindChild(HttpServletRequest request,ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
+    public Result addParentFindChild( ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (user.getParentFindChild() == null&&!file.isEmpty()) {
+        if (user.getParentFindChild() == null && !file.isEmpty()) {
             parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
-                user.setParentFindChild(parentFindChild);
-                parentFindChildRepository.save(parentFindChild);
-                userRepository.save(user);
-                return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
-        }else {
+            user.setParentFindChild(parentFindChild);
+            parentFindChildRepository.save(parentFindChild);
+            userRepository.save(user);
+            return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
+        } else {
             return ResultUtils.send(MessageXin.PARENTFINDCHILD_HAS_EXIST);
         }
     }
 
     /**
-     * 根据id删除发布信息
+     * 删除寻找孩子的发布信息
      *
-     * @param id
+     * @param emailAddr
      * @return
      */
     @Transactional
     public Result deleteParentFindChild(String emailAddr) {
-        User user=userRepository.findUserByEmailAddr(emailAddr);
+        User user = userRepository.findUserByEmailAddr(emailAddr);
         ParentFindChild parentFindChild = user.getParentFindChild();
         if (parentFindChild != null) {
             user.setParentFindChild(null);
@@ -91,9 +91,9 @@ public class ParentFindChildService {
      * @param parentFindChild
      * @return
      */
-    public Result updateParentFindChild(ParentFindChild parentFindChild,MultipartFile file) {
+    public Result updateParentFindChild(ParentFindChild parentFindChild, MultipartFile file) {
         if (!file.isEmpty()) {
-           parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
+            parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
         }
         return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
     }

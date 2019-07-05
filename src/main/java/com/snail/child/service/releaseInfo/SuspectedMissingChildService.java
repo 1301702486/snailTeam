@@ -51,7 +51,7 @@ public class SuspectedMissingChildService {
     @Transactional
     public Result addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if(!file.isEmpty()){
+        if (!file.isEmpty()) {
             suspectedMissingChild.setPhoto(PhotoUtils.uploadPhoto(file));
         }
         user.addSuspectedMissingChild(suspectedMissingChild);
@@ -66,10 +66,10 @@ public class SuspectedMissingChildService {
      * @return
      */
     @Transactional
-    public Result deleteSuspectedMissingParent(Integer id,String emailAddr) {
+    public Result deleteSuspectedMissingParent(Integer id, String emailAddr) {
         SuspectedMissingChild suspectedMissingChild = suspectedMissingChildRepository.findSuspectedMissingChildById(id);
         if (suspectedMissingChild != null) {
-            User user=userRepository.findUserByEmailAddr(emailAddr);
+            User user = userRepository.findUserByEmailAddr(emailAddr);
             user.getSuspectedMissingChildren().remove(suspectedMissingChild);
             suspectedMissingChildRepository.delete(suspectedMissingChild);
             return ResultUtils.send(MessageXin.SUCCESS, userRepository.save(user));
@@ -80,12 +80,13 @@ public class SuspectedMissingChildService {
 
     /**
      * 查询疑似流浪儿童信息
+     *
      * @param suspectedMissingChild
      * @param pageable
      * @return
      */
-    public Result selectSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild, Pageable pageable){
-        if(suspectedMissingChild!=null) {
+    public Result selectSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild, Pageable pageable) {
+        if (suspectedMissingChild != null) {
             Specification specification = new Specification() {
                 @Override
                 public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -113,7 +114,7 @@ public class SuspectedMissingChildService {
             };
             Page<SuspectedMissingChild> page = suspectedMissingChildRepository.findAll(specification, pageable);
             return ResultUtils.send(MessageXin.SUCCESS, page);
-        }else{
+        } else {
             return ResultUtils.send(MessageXin.SUCCESS, suspectedMissingChildRepository.findAll());
         }
     }

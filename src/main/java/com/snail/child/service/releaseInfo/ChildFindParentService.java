@@ -67,12 +67,13 @@ public class ChildFindParentService {
 
     /**
      * 删除家长寻找孩子的发布信息
+     *
      * @param emailAddr
      * @return
      */
     @Transactional
     public Result deleteChildFindParent(String emailAddr) {
-        User user=userRepository.findUserByEmailAddr(emailAddr);
+        User user = userRepository.findUserByEmailAddr(emailAddr);
         ChildFindParent childFindParent = user.getChildFindParent();
         if (childFindParent != null) {
             user.setChildFindParent(null);
@@ -149,7 +150,6 @@ public class ChildFindParentService {
             return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.findAll(page));
         }
     }
-
 
 
 }

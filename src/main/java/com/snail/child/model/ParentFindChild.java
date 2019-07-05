@@ -47,12 +47,12 @@ public class ParentFindChild {
 
     private String photo;
 
-    @OneToOne(cascade= CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
     private Address missingAddress;
 
 
-    @OneToOne(cascade= CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "home_address_id")
     private Address homeAddress;
 

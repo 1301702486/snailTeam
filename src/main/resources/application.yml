@@ -9,13 +9,26 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: true
-    redis:
-      host: localhost #redi主机地址
-      port: 6379
-    session:
-      store-type: redis # spring session使用存储类型，spirngboot默认就是使用redis方式，如果不想用可以填none。
+  redis:
+    host: localhost #redi主机地址
+    port: 6379
+    password:
+  #        pool:
+  #
+  #          max-active: 8
+  #          max-wait: -1
+  #          max-idle: 8
+  #          min-idle: 0
+  session:
+    store-type: redis # spring session使用存储类型，spirngboot默认就是使用redis方式，如果不想用可以填none。
+    timeout: 600000
+  thymeleaf:
+    servlet:
+      content-type: text/html
+
+#    prefix: classpath:/templates/
+
 
 server:
-  port: 8081
-
+  port: 8082
 

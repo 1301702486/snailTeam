@@ -86,7 +86,6 @@ public class UserUpdateService {
 //        return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
 //
 //    }
-
     @Transactional
     public Result updateUserInfo(User user, String emailAddr) {
         User user1 = findUserById(emailAddr);   // user1是user的旧值
@@ -154,8 +153,7 @@ public class UserUpdateService {
         if (findUserById(emailAddr) != null) {
             userRepository.delete(findUserById(emailAddr));
             return ResultUtils.send(MessageGuo.SUCCESS, userRepository.findAll());
-        }
-        else {
+        } else {
             return ResultUtils.send(MessageGuo.NO_EMAIL_ADDRESS);
         }
     }

@@ -4,9 +4,7 @@ import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.service.user.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,18 +39,19 @@ public class LoginController {
 
 
     @RequestMapping("/login")
+
     public Result login(@RequestParam("emailAddr") String emailAddr,
-                      @RequestParam("password") String password,
-                      HttpServletRequest request) throws IOException {
+                        @RequestParam("password") String password,
+                        HttpServletRequest request) throws IOException {
 
         Result result = loginService.login(emailAddr, password);
         if (result.getCode().equals(0)) {
-            HttpSession session = request.getSession();
-            session.setAttribute("emailAddr", emailAddr);
-            session.setAttribute("password", password);
-            System.out.println(session.getId());
+//            HttpSession session = request.getSession();
+//            session.setAttribute("emailAddr", emailAddr);
+//            session.setAttribute("password", password);
+            request.getSession().setAttribute("emailAddr", emailAddr);
+            System.out.println(request.getSession().getId());
         }
         return result;
     }
-
 }
