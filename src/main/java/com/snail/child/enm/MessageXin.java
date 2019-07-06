@@ -14,6 +14,9 @@ public enum MessageXin implements Message {
     CHILDFINDPARENT_HAS_EXIST(403, "每人只可发布一则信息，请检查您的发布列表！"),
     CHILDFINDPARENT_NOT_EXIST(404, "发布信息不存在"),
     SUSPECTED_NOT_EXIST(404, "发布信息不存在"),
+    INFO_INCOMPLETE(405, "用户信息不完善"),
+    NO_MATCH_RESULT(406, "无匹配结果"),
+    NO_PHOTO(407, "未上传图片"),
     SUCCESS(0, "成功!"),
     ;
 

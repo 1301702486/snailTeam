@@ -25,6 +25,8 @@ public class SuspectedMissingChild {
 
     private String photo;
 
+    private String faceToken;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
     private Address missingAddress;
@@ -71,5 +73,11 @@ public class SuspectedMissingChild {
         this.detail = detail;
     }
 
+    public String getFaceToken() {
+        return faceToken;
+    }
 
+    public void setFaceToken(String faceToken) {
+        this.faceToken = faceToken;
+    }
 }

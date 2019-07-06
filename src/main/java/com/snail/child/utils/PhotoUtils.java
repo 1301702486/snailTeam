@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 /**
@@ -13,20 +14,7 @@ import java.util.UUID;
  * Description: No Description
  */
 public class PhotoUtils {
-
-    //private static String uploadDir=System.getProperty("user.dir") + "/uploadingDir/";
-
-    private static String uploadDir = "D:/upload/";
-
-    private static String path(){
-        String path="";
-        try {
-            path=InetAddress.getLocalHost().toString() + ":8082/images/";
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return path;
-    }
+    private static String uploadDir = "C:/images/";
 
     public static String uploadPhoto(MultipartFile file) {
         // 获取文件名
@@ -45,13 +33,14 @@ public class PhotoUtils {
         }
         try {
             file.transferTo(dest);
-            System.out.println("上传成功后的文件路径未：" + filePath + fileName);
+            System.out.println("上传成功后的文件路径为：" + filePath + fileName);
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return path() + fileName;
+        String path = "http://" + "120.55.164.189" + ":8081/image/";
+        return path + fileName;
     }
 
 }

@@ -23,12 +23,8 @@ public class RegisterController {
 
 
     @PostMapping("/register")
-    public Result register(String emailAddr, String password, HttpServletRequest request) {
-        Result result = service.register(emailAddr, password);
-        HttpSession session = request.getSession();
-        session.setAttribute("userName", emailAddr);
-        session.setAttribute("password", password);
-        return result;
+    public Result register(String emailAddr, String password) {
+        return service.register(emailAddr, password);
     }
 
     /**

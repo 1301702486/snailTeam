@@ -43,9 +43,9 @@ public class FaceDetectService {
     @Autowired
     UserRepository userRepository;
 
-    private final static int CONNECT_TIME_OUT = 30000;
-    private final static int READ_OUT_TIME = 50000;
-    private static String boundaryString = getBoundary();
+    private final int CONNECT_TIME_OUT = 30000;
+    private final int READ_OUT_TIME = 50000;
+    private String boundaryString = getBoundary();
 
     /**
      * 根据邮箱获取该家长(用户)要寻找的孩子的照片(家寻宝贝)
@@ -58,7 +58,7 @@ public class FaceDetectService {
         if (user != null) {
             ParentFindChild pRelease = user.getParentFindChild();
             if (pRelease != null) {
-//                return pRelease.getPhoto();
+                return pRelease.getPhoto();
             }
         }
         return null;
@@ -75,7 +75,7 @@ public class FaceDetectService {
         if (user != null) {
             ChildFindParent cRelease = user.getChildFindParent();
             if (cRelease != null) {
-//                return cRelease.getPhoto();
+                return cRelease.getPhoto();
             }
         }
         return null;
@@ -93,9 +93,9 @@ public class FaceDetectService {
         if (user != null) {
             Set<SuspectedMissingChild> children = user.getSuspectedMissingChildren();
             if (!children.isEmpty()) {
-                for (SuspectedMissingChild child : children) {
+                for (SuspectedMissingChild child: children) {
                     if (child.getId().equals(id)) {
-//                        return child.getPhoto();
+                        return child.getPhoto();
                     }
                 }
             }
@@ -103,8 +103,7 @@ public class FaceDetectService {
         return null;
     }
 
-    public String getFaceString(String emailAddr, String imageUrl) throws IOException {
-//        String imageUrl = getPfcPhotoByEmailAddr(emailAddr);
+    public String getFaceString(String imageUrl) {
         String url = "https://api-cn.faceplusplus.com/facepp/v3/detect";
         HashMap<String, String> map = new HashMap<>();
         HashMap<String, byte[]> byteMap = new HashMap<>();
@@ -125,7 +124,7 @@ public class FaceDetectService {
         return faceString;
     }
 
-    protected static byte[] post(String url, HashMap<String, String> map, HashMap<String, byte[]> fileMap) throws Exception {
+    protected byte[] post(String url, HashMap<String, String> map, HashMap<String, byte[]> fileMap) throws Exception {
         HttpURLConnection conne;
         URL url1 = new URL(url);
         conne = (HttpURLConnection) url1.openConnection();
@@ -189,7 +188,7 @@ public class FaceDetectService {
         return bytes;
     }
 
-    private static String getBoundary() {
+    private String getBoundary() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 32; ++i) {
@@ -198,21 +197,22 @@ public class FaceDetectService {
         return sb.toString();
     }
 
-    private static String encode(String value) throws Exception {
+    private String encode(String value) throws Exception {
         return URLEncoder.encode(value, "UTF-8");
     }
 
-    public static String getFaceToken(String faceString) {
-        try {
-            Map<String, Object> map = new Gson().fromJson(faceString, new TypeToken<HashMap<String, Object>>() {
-            }.getType());
-            ArrayList<Object> faces = (ArrayList<Object>) map.get("faces");
-            LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>) faces.get(0);
-            String faceToken = treeMap.get("face_token").toString();
-            return faceToken;
-        } catch (Exception e) {
-            // TODO: Handle JSONException
-        }
-        return null;
+    /**
+     * 获取face_token
+     *
+     * @param imgUrl
+     * @return
+     * @throws IOException
+     */
+    public String getFaceToken(String imgUrl) {
+        String faceStr = getFaceString(imgUrl);
+        Map<String, Object> map = new Gson().fromJson(faceStr, new TypeToken<HashMap<String, Object>>() {}.getType());
+        ArrayList<Object> faces = (ArrayList<Object>) map.get("faces");
+        LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>)faces.get(0);
+        return treeMap.get("face_token").toString();
     }
 }

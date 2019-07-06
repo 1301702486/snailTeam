@@ -30,7 +30,7 @@ public class ParentFindChildController {
 
 
     @InitBinder
-    protected void init(HttpServletRequest request, ServletRequestDataBinder binder) {
+    protected void init(ServletRequestDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
@@ -40,16 +40,14 @@ public class ParentFindChildController {
     @PostMapping(value = "/addParentFindChild")
     public Result addParentFindChild(String emailAddr, ParentFindChild parentFindChild,
                                      @RequestParam("releasePhoto") MultipartFile file) {
-//        String emailAddr = (String) request.getSession().getAttribute("emailAddr");
-//        System.out.println(request.getSession().getId());
-        return parentFindChildService.addParentFindChild( parentFindChild, emailAddr, file);
+        return parentFindChildService.addParentFindChild(parentFindChild, emailAddr, file);
     }
 
-    @ApiOperation(value = "更新家长找孩子信息")
-    @PutMapping(value = "/updateParentFindChild")
-    public Result addParentFindChild(ParentFindChild parentFindChild, @RequestParam("releasePhoto") MultipartFile file) {
-        return parentFindChildService.updateParentFindChild(parentFindChild, file);
-    }
+//    @ApiOperation(value="更新家长找孩子信息" )
+//    @PutMapping(value="/updateParentFindChild")
+//    public Result addParentFindChild(ParentFindChild parentFindChild,@RequestParam("releasePhoto") MultipartFile file){
+//        return parentFindChildService.updateParentFindChild(parentFindChild,file);
+//    }
 
 
     @ApiOperation(value = "查询家长找孩子信息")
@@ -62,7 +60,6 @@ public class ParentFindChildController {
     @ApiOperation("删除发布信息")
     @PostMapping(value = "/deleteParentFindChild")
     public Result deleteParentFindChild(String emailAddr) {
-        //String emailAddr = request.getSession().getAttribute("emailAddr").toString();
         return parentFindChildService.deleteParentFindChild(emailAddr);
     }
 }

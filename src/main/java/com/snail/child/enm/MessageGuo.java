@@ -7,6 +7,7 @@ public enum MessageGuo implements Message {
     NO_EMAIL_ADDRESS(202, "邮箱地址不存在"),
     NULL_PROVINCE(203, "省份不存在"),
     CHANGE_PWD_FAILED(204, "密码修改失败"),
+    NO_USER(205, "用户不存在"),
     SUCCESS(0, "成功!"),
     ;
 

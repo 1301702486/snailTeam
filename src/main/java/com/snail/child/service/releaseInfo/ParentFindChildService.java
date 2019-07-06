@@ -2,12 +2,14 @@ package com.snail.child.service.releaseInfo;
 
 
 import com.snail.child.enm.MessageXin;
-import com.snail.child.model.Address;
-import com.snail.child.model.ParentFindChild;
-import com.snail.child.model.Result;
-import com.snail.child.model.User;
+import com.snail.child.model.*;
+import com.snail.child.repository.ChildFindParentRepository;
 import com.snail.child.repository.ParentFindChildRepository;
+import com.snail.child.repository.SuspectedMissingChildRepository;
 import com.snail.child.repository.UserRepository;
+import com.snail.child.service.faceRecog.FaceDetectService;
+import com.snail.child.service.faceRecog.FaceService;
+import com.snail.child.service.user.UserUpdateService;
 import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,18 @@ public class ParentFindChildService {
     ParentFindChildRepository parentFindChildRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    UserUpdateService userService;
+    @Autowired
+    FaceDetectService detectService;
+    @Autowired
+    FaceService faceService;
+    @Autowired
+    ChildFindParentRepository childFindParentRepository;
+    @Autowired
+    SuspectedMissingChildRepository suspectedMissingChildRepository;
+
+    private final String outerId = "childrenFaceSet";
 
     /**
      * 添加父母寻找孩子
@@ -52,21 +66,36 @@ public class ParentFindChildService {
      * @param file
      * @return
      */
-    public Result addParentFindChild( ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
+    public Result addParentFindChild(ParentFindChild parentFindChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
+        if (!userService.infoComplete(user)) {
+            return ResultUtils.send(MessageXin.INFO_INCOMPLETE);
+        }
         if (user.getParentFindChild() == null && !file.isEmpty()) {
-            parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
+            String imageUrl = PhotoUtils.uploadPhoto(file);
+            parentFindChild.setPhoto(imageUrl);
+            parentFindChildRepository.save(parentFindChild);
+            // 获取上传的图片的face_token
+            String faceToken = detectService.getFaceToken(imageUrl);
+            parentFindChild.setFaceToken(faceToken);
+
             user.setParentFindChild(parentFindChild);
             parentFindChildRepository.save(parentFindChild);
             userRepository.save(user);
-            return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
+            // TODO: Debug to see what its content is
+            ArrayList<Object> results = getMatchResults(faceToken);
+            if (results != null) {
+                return ResultUtils.send(MessageXin.SUCCESS, results);
+            } else {
+                return ResultUtils.send(MessageXin.NO_MATCH_RESULT);
+            }
         } else {
             return ResultUtils.send(MessageXin.PARENTFINDCHILD_HAS_EXIST);
         }
     }
 
     /**
-     * 删除寻找孩子的发布信息
+     * 根据emailAddr删除发布信息
      *
      * @param emailAddr
      * @return
@@ -76,6 +105,9 @@ public class ParentFindChildService {
         User user = userRepository.findUserByEmailAddr(emailAddr);
         ParentFindChild parentFindChild = user.getParentFindChild();
         if (parentFindChild != null) {
+            // Remove face token from FaceSet
+            faceService.removeFromFaceSet(parentFindChild.getFaceToken(), outerId);
+
             user.setParentFindChild(null);
             parentFindChildRepository.delete(parentFindChild);
             parentFindChildRepository.findAll();
@@ -85,18 +117,18 @@ public class ParentFindChildService {
         }
     }
 
-    /**
-     * 更新家长找孩子的发布信息
-     *
-     * @param parentFindChild
-     * @return
-     */
-    public Result updateParentFindChild(ParentFindChild parentFindChild, MultipartFile file) {
-        if (!file.isEmpty()) {
-            parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
-        }
-        return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
-    }
+//    /**
+//     * 更新家长找孩子的发布信息
+//     *
+//     * @param parentFindChild
+//     * @return
+//     */
+//    public Result updateParentFindChild(ParentFindChild parentFindChild, MultipartFile file) {
+//        if (!file.isEmpty()) {
+//            parentFindChild.setPhoto(PhotoUtils.uploadPhoto(file));
+//        }
+//        return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.save(parentFindChild));
+//    }
 
     /**
      * 查询
@@ -148,6 +180,30 @@ public class ParentFindChildService {
         } else {
             return ResultUtils.send(MessageXin.SUCCESS, parentFindChildRepository.findAll(page));
         }
+    }
+
+    /**
+     * 找到所有匹配结果
+     *
+     * @param faceToken
+     * @return
+     */
+    public ArrayList<Object> getMatchResults(String faceToken) {
+        // 从childrenFaceSet中获取人脸检索结果的face_tokens
+        ArrayList<String> faceTokens = faceService.getfaceTokens(faceToken, outerId);
+        // 根据face_tokens找到已存在的child find parent和suspected missing child发布信息
+        ArrayList<Object> results = new ArrayList<>();
+        for (String token : faceTokens) {
+            ChildFindParent childFindParent = childFindParentRepository.findChildFindParentByFaceToken(token);
+            if (childFindParent != null) {
+                results.add(childFindParent);
+            }
+            SuspectedMissingChild suspectedMissingChild = suspectedMissingChildRepository.findSuspectedMissingChildByFaceToken(token);
+            if (suspectedMissingChild != null) {
+                results.add(suspectedMissingChild);
+            }
+        }
+        return results;
     }
 
 }

@@ -52,16 +52,15 @@ public class User {
     private ChildFindParent childFindParent;
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "USER_SUSPECTED",
-            joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "SUSPTECTED_ID"))
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+    @JoinTable(name="USER_SUSPECTED",
+            joinColumns=@JoinColumn(name="USER_ID"),
+            inverseJoinColumns=@JoinColumn(name="SUSPTECTED_ID"))
     private Set<SuspectedMissingChild> suspectedMissingChildren;
 
-    public User() {
+    public User(){
 
     }
-
     public byte[] getHeadPortrait() {
         return headPortrait;
     }

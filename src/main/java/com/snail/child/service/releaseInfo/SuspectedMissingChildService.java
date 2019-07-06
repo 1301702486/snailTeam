@@ -1,12 +1,13 @@
 package com.snail.child.service.releaseInfo;
 
 import com.snail.child.enm.MessageXin;
-import com.snail.child.model.Address;
-import com.snail.child.model.Result;
-import com.snail.child.model.SuspectedMissingChild;
-import com.snail.child.model.User;
+import com.snail.child.model.*;
+import com.snail.child.repository.ParentFindChildRepository;
 import com.snail.child.repository.SuspectedMissingChildRepository;
 import com.snail.child.repository.UserRepository;
+import com.snail.child.service.faceRecog.FaceDetectService;
+import com.snail.child.service.faceRecog.FaceService;
+import com.snail.child.service.user.UserUpdateService;
 import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,20 @@ public class SuspectedMissingChildService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserUpdateService userService;
+
+    @Autowired
+    FaceService faceService;
+
+    @Autowired
+    FaceDetectService detectService;
+
+    @Autowired
+    ParentFindChildRepository parentFindChildRepository;
+
+    private final String outerId = "pfcFaceSet";
+
 
     /**
      * 添加疑似流浪儿童信息
@@ -51,12 +66,28 @@ public class SuspectedMissingChildService {
     @Transactional
     public Result addSuspectedMissingChild(SuspectedMissingChild suspectedMissingChild, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (!file.isEmpty()) {
-            suspectedMissingChild.setPhoto(PhotoUtils.uploadPhoto(file));
+        if (!userService.infoComplete(user)) {
+            return ResultUtils.send(MessageXin.INFO_INCOMPLETE);
         }
-        user.addSuspectedMissingChild(suspectedMissingChild);
-        userRepository.save(user);
-        return ResultUtils.send(MessageXin.SUCCESS, suspectedMissingChild);
+        String imageUrl = PhotoUtils.uploadPhoto(file);
+        if (!file.isEmpty()) {
+            suspectedMissingChild.setPhoto(imageUrl);
+            // 获取上传的图片的face_token
+            String faceToken = detectService.getFaceToken(imageUrl);
+            suspectedMissingChild.setFaceToken(faceToken);
+
+            user.addSuspectedMissingChild(suspectedMissingChild);
+            userRepository.save(user);
+
+            ArrayList<ParentFindChild> results = getMatchResults(faceToken);
+            if (results != null) {
+                return ResultUtils.send(MessageXin.SUCCESS, getMatchResults(faceToken));
+            } else {
+                return ResultUtils.send(MessageXin.NO_MATCH_RESULT);
+            }
+        } else {
+            return ResultUtils.send(MessageXin.NO_PHOTO);
+        }
     }
 
     /**
@@ -69,6 +100,9 @@ public class SuspectedMissingChildService {
     public Result deleteSuspectedMissingParent(Integer id, String emailAddr) {
         SuspectedMissingChild suspectedMissingChild = suspectedMissingChildRepository.findSuspectedMissingChildById(id);
         if (suspectedMissingChild != null) {
+            // Remove face token from FaceSet
+            faceService.removeFromFaceSet(suspectedMissingChild.getFaceToken(), outerId);
+
             User user = userRepository.findUserByEmailAddr(emailAddr);
             user.getSuspectedMissingChildren().remove(suspectedMissingChild);
             suspectedMissingChildRepository.delete(suspectedMissingChild);
@@ -117,5 +151,25 @@ public class SuspectedMissingChildService {
         } else {
             return ResultUtils.send(MessageXin.SUCCESS, suspectedMissingChildRepository.findAll());
         }
+    }
+
+    /**
+     * 找到所有匹配结果
+     *
+     * @param faceToken
+     * @return
+     */
+    public ArrayList<ParentFindChild> getMatchResults(String faceToken) {
+        // 从pfcFaceSet中获取人脸检索结果的face_tokens
+        ArrayList<String> faceTokens = faceService.getfaceTokens(faceToken, outerId);
+        // 根据face_tokens找到已存在的parent find child发布信息
+        ArrayList<ParentFindChild> results = new ArrayList<>();
+        for (String token : faceTokens) {
+            ParentFindChild parentFindChild = parentFindChildRepository.findParentFindChildByFaceToken(token);
+            if (parentFindChild != null) {
+                results.add(parentFindChild);
+            }
+        }
+        return results;
     }
 }

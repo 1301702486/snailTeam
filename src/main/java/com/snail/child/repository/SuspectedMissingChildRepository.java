@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Description: No Description
  */
 public interface SuspectedMissingChildRepository extends JpaRepository<SuspectedMissingChild, String>, JpaSpecificationExecutor<SuspectedMissingChild> {
-
     SuspectedMissingChild findSuspectedMissingChildById(Integer id);
+    SuspectedMissingChild findSuspectedMissingChildByFaceToken(String faceToken);
 }

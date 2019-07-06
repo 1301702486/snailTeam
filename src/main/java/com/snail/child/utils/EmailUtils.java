@@ -14,9 +14,9 @@ import java.util.Properties;
 
 public class EmailUtils {
 
-    private String from = "1725145436@qq.com";
+    private String from = "1301702486@qq.com";
 
-    private String password = "tpsaycxcxhhobjgb";
+    private String password = "jwcuzuyzqxfviihh";
 
     private String host = "smtp.qq.com";
 

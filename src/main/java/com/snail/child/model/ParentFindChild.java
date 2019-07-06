@@ -47,12 +47,14 @@ public class ParentFindChild {
 
     private String photo;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    private String faceToken;
+
+    @OneToOne(cascade= CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
     private Address missingAddress;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade= CascadeType.ALL)
     @JoinColumn(name = "home_address_id")
     private Address homeAddress;
 
@@ -132,6 +134,14 @@ public class ParentFindChild {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public String getFaceToken() {
+        return faceToken;
+    }
+
+    public void setFaceToken(String faceToken) {
+        this.faceToken = faceToken;
     }
 
 //    public User getUser() {

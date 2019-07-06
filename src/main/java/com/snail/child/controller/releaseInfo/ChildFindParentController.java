@@ -30,39 +30,37 @@ public class ChildFindParentController {
     ChildFindParentService childFindParentService;
 
     @InitBinder
-    public void initBinder(WebDataBinder binder, WebRequest request) {
+    public void initBinder(WebDataBinder binder) {
         //转换日期
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+         DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
 
-    @ApiOperation(value = "发布孩子找家长信息")
+    @ApiOperation(value="发布孩子找家长信息")
     @PostMapping("/addChildFindParent")
     public Result addChildFindParent(ChildFindParent childFindParent,
-                                    String emailAddr,
-                                     @RequestParam("releasePhoto") MultipartFile file) {
-        //String emailAddr = request.getSession().getAttribute("emailAddr").toString();
-        return childFindParentService.addChildFindParent(childFindParent, emailAddr, file);
+                                     String emailAddr,
+                                     @RequestParam( "releasePhoto") MultipartFile file){
+               return childFindParentService.addChildFindParent(childFindParent,emailAddr,file);
     }
 
     @ApiOperation(value = "删除孩子找家长信息")
     @DeleteMapping("/deleteChildFindParent")
-    public Result deleteChildFindParent(String emailAddr) {
-        //String emailAddr = request.getSession().getAttribute("emailAddr").toString();
+    public Result deleteChildFindParent(String emailAddr){
         return childFindParentService.deleteChildFindParent(emailAddr);
     }
 
-    @ApiOperation(value = "查询孩子找父母的信息")
-    @GetMapping(value = "/selectChildFindParent")
-    public Result selectChildFindParent(ChildFindParent childFindParent, Pageable pageable) {
-        return childFindParentService.selectChildFindParent(childFindParent, pageable);
+    @ApiOperation(value="查询孩子找父母的信息")
+    @GetMapping(value="/selectChildFindParent")
+    public Result selectChildFindParent(ChildFindParent childFindParent, Pageable pageable){
+        return childFindParentService.selectChildFindParent(childFindParent,pageable);
     }
 
-    @ApiOperation(value = "更新孩子找父母的信息")
-    @PutMapping(value = "/updateChildFindParent")
-    public Result updateChildFindParent(ChildFindParent childFindParent,
-                                        @RequestParam("releasePhoto") MultipartFile file) {
-        return childFindParentService.updateChildFindParent(childFindParent, file);
-    }
+//    @ApiOperation(value = "更新孩子找父母的信息")
+//    @PutMapping(value = "/updateChildFindParent")
+//    public Result updateChildFindParent(ChildFindParent childFindParent,
+//                                        @RequestParam("releasePhoto") MultipartFile file){
+//        return childFindParentService.updateChildFindParent(childFindParent,file);
+//    }
 }

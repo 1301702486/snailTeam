@@ -117,6 +117,32 @@ public class UserUpdateService {
     }
 
     /**
+     * 检查用户信息是否完善
+     *
+     * @param user
+     * @return true: 完善; false: 不完善
+     */
+    public boolean infoComplete(User user) {
+        boolean flag = true;
+        if (user.getAddress() == null) {
+            flag = false;
+        } else if (user.getAddress().getProvince() == null) {
+            flag = false;
+        } else if (user.getAddress().getCity() == null) {
+            flag = false;
+        } else if (user.getAddress().getDistrict() == null) {
+            flag = false;
+        } else if (user.getBirthday() == null) {
+            flag = false;
+        } else if (user.getGender() == null) {
+            flag = false;
+        } else if (user.getPhone() == null) {
+            flag = false;
+        }
+        return flag;
+    }
+
+    /**
      * 按用户名查询一个用户
      *
      * @param emailAddr
