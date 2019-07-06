@@ -1,5 +1,7 @@
 package com.snail.child.controller;
 
+import com.snail.child.model.Result;
+import com.snail.child.res.Url;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,11 +17,14 @@ import java.io.IOException;
 public class IndexController {
     @RequestMapping("/")
     public void defaultToIndex(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://120.55.164.189:8081/index.html");
+        String url = Url.baseUrl + Url.webMapping + "/index.html";
+        response.sendRedirect(url);
     }
 
     @RequestMapping("/index")
     public void toIndex(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://120.55.164.189:8081/index.html");
+        String url = Url.baseUrl + Url.webMapping + "/index.html";
+        response.sendRedirect(url);
     }
+
 }

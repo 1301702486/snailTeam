@@ -1,5 +1,6 @@
 package com.snail.child.config;
 
+import com.snail.child.res.Url;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -29,8 +30,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/v2/api-docs/**")
                 .addResourceLocations("classpath:/META-INF/resources/v2/api-docs/");
 
-        registry.addResourceHandler("/image/**")
+        String imagePathPattern = "/" + Url.imageMapping + "/**";
+        registry.addResourceHandler(imagePathPattern)
                 .addResourceLocations("file:C:/images/")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        String webPathPattern = "/" + Url.webMapping + "/**";
+        registry.addResourceHandler(webPathPattern)
+                .addResourceLocations("file:C:/webpages/")
                 .addResourceLocations("classpath:/META-INF/resources/");
 
     }
@@ -45,7 +52,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowCredentials(true)
                 .allowedMethods("GET", "POST", "DELETE", "PUT")
-                .maxAge(60*60*24*30);
+                .maxAge(60 * 60 * 24 * 30);
     }
 
 }

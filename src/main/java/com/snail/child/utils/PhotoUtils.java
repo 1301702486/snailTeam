@@ -1,5 +1,6 @@
 package com.snail.child.utils;
 
+import com.snail.child.res.Url;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class PhotoUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String path = "http://" + "120.55.164.189" + ":8081/image/";
+        String path = Url.baseUrl + Url.imageMapping + "/";
         return path + fileName;
     }
 

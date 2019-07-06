@@ -4,7 +4,7 @@ import com.snail.child.enm.MessageChen;
 import com.snail.child.model.Result;
 import com.snail.child.model.User;
 import com.snail.child.repository.UserRepository;
-import com.snail.child.res.StringsChen;
+import com.snail.child.res.Url;
 import com.snail.child.utils.EmailUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +40,10 @@ public class RegisterService {
         user.setPassword(password);
         userRepository.save(user);
         EmailUtils sendEmail = new EmailUtils();
-        String url = StringsChen.PATH +
-                "/login?" +
-                "emailAddr=" + emailAddr+
-                "&password="+password;
-        String content = "<h1>" + StringsChen.CLICK_TO_REGISTER + "</h1>" +
-                "<a href=\""+url+"\">验证</a>";
-        sendEmail.sendMessage(emailAddr, StringsChen.REGISTER_CONFIRM, content);
+        String url = Url.baseUrl + Url.webMapping + "/" + "index.html";
+        String content = "<h1>请点击链接完成注册。</h1>" +
+                "<a href=\"" + url + "\">验证</a>";
+        sendEmail.sendMessage(emailAddr, "【流浪宝贝】注册验证", content);
         return ResultUtils.send(MessageChen.GO_CONFIRM);
     }
 
@@ -57,8 +54,8 @@ public class RegisterService {
      * @param password
      * @return
      */
-    public Result registerConfirm(String emailAddr, String password){
-        User user=new User();
+    public Result registerConfirm(String emailAddr, String password) {
+        User user = new User();
         user.setEmailAddr(emailAddr);
         user.setPassword(password);
         userRepository.save(user);
