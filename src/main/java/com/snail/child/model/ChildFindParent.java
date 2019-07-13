@@ -1,5 +1,7 @@
 package com.snail.child.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -21,38 +23,30 @@ public class ChildFindParent {
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
-    //@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date birthday;//生日
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
-    //@JsonFormat(pattern ="yyyy-MM-dd HH:mm", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date missingDate;//走失时间
 
     @Column(nullable = false)
     private String gender;//性别
 
-//    @Lob
-//    @Basic(fetch = FetchType.LAZY)
-//    @Column(length = 16777215,nullable = false)
-//    private byte[] photo;//图片
-
     private String photo;
 
     private String faceToken;
 
-    @OneToOne(cascade= CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "missing_address_id")
     private Address missingAddress;
 
-    @OneToOne(cascade= CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "home_address_id")
     private Address homeAddress;
 
     private String detail;//其他详情
-
-//    @OneToOne(mappedBy = "childFindParent", cascade = {CascadeType.MERGE, CascadeType.REFRESH}, optional = false)
-//    private User user;
 
     public Integer getId() {
         return id;
@@ -133,12 +127,4 @@ public class ChildFindParent {
     public void setFaceToken(String faceToken) {
         this.faceToken = faceToken;
     }
-
-//    public User getUser() {
-//        return user;
-//    }
-////
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
 }

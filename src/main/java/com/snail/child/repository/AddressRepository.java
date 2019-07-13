@@ -11,9 +11,5 @@ import java.util.List;
  * Description: No Description
  */
 public interface AddressRepository extends JpaRepository<Address, Integer> {
-    Address findAddressById(Integer id);
-    List<Address> findAllByProvince(String province);
-    List<Address> findAllByCity(String city);
-    List<Address> findAllByProvinceAndCity(String province, String city);
 
 }

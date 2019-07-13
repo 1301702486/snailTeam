@@ -17,6 +17,15 @@ public class ContactUsController {
     @Autowired
     ContactUsService contactUsService;
 
+    /**
+     * 联系我们
+     *
+     * @param name       用户名称
+     * @param emailAddr  用户邮件联系方式
+     * @param contentStr 邮件内容
+     * @param title      邮件主题
+     * @return 成功: code=0
+     */
     @PostMapping("/contactUS")
     public Result contactUs(String name, String emailAddr, String contentStr, String title) {
         return contactUsService.contactUs(emailAddr, name, contentStr, title);

@@ -15,7 +15,6 @@ import java.util.UUID;
  * Description: No Description
  */
 public class PhotoUtils {
-    private static String uploadDir = "C:/images/";
 
     public static String uploadPhoto(MultipartFile file) {
         // 获取文件名
@@ -25,7 +24,7 @@ public class PhotoUtils {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         System.out.println("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = uploadDir;
+        String filePath = "C:/images/";
         // 解决中文问题，liunx下中文路径，图片显示问题
         fileName = UUID.randomUUID() + suffixName;
         File dest = new File(filePath + fileName);

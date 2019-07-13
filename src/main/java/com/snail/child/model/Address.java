@@ -24,17 +24,6 @@ public class Address {
 
     private String detail;
 
-//    @OneToOne(mappedBy = "address",cascade = {CascadeType.MERGE,CascadeType.REFRESH},optional = false)
-//    private User user;
-//
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
-
     public Integer getId() {
         return id;
     }

@@ -18,11 +18,6 @@ public class SuspectedMissingChild {
     @Column(nullable = false)
     private Integer height;
 
-//    @Lob
-//    @Basic(fetch = FetchType.LAZY)
-//    @Column(length = 16777215, nullable = false)
-//    private byte[] photo;
-
     private String photo;
 
     private String faceToken;

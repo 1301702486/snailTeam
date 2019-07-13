@@ -3,6 +3,16 @@ package com.snail.child.service.faceRecog;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import com.snail.child.enm.MessageXin;
+import com.snail.child.model.ChildFindParent;
+import com.snail.child.model.ParentFindChild;
+import com.snail.child.model.Result;
+import com.snail.child.model.SuspectedMissingChild;
+import com.snail.child.repository.ChildFindParentRepository;
+import com.snail.child.repository.ParentFindChildRepository;
+import com.snail.child.repository.SuspectedMissingChildRepository;
+import com.snail.child.utils.ResultUtils;
+import javafx.scene.Parent;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -12,6 +22,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.HttpEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,8 +43,13 @@ public class FaceService {
 
     private final String apiKey = "GTvcIl8x4HX25ytluaDi7eicC7rv2Ad_";
     private final String apiSecret = "7CMHtPRjOD14UyEft6yb_-EJfDVaJjnj";
+
     /**
      * 发送 post请求访问本地应用并根据传递参数不同返回不同结果
+     *
+     * @param formparams 请求参数
+     * @param url        请求接口
+     * @return 请求结果
      */
     public String post(List<BasicNameValuePair> formparams, String url) {
         // 创建默认的httpClient实例.
@@ -78,8 +94,8 @@ public class FaceService {
     /**
      * 创建一个FaceSet
      *
-     * @param outerId
-     * @return
+     * @param outerId 自定义FaceSet标识
+     * @return 请求结果
      */
     public String createFaceSet(String outerId) {
         String urlCreate = "https://api-cn.faceplusplus.com/facepp/v3/faceset/create";
@@ -93,10 +109,11 @@ public class FaceService {
     }
 
     /**
-     * 添加一个face_token到FaceSet
+     * 添加face_tokens到FaceSet
      *
-     * @param faceTokens
-     * @return
+     * @param faceTokens 要添加的face_token字符串
+     * @param outerId    添加到的FaceSet标识
+     * @return 请求结果
      */
     public String addToFaceSet(String faceTokens, String outerId) {
         String urlAdd = "https://api-cn.faceplusplus.com/facepp/v3/faceset/addface";
@@ -113,8 +130,9 @@ public class FaceService {
     /**
      * 删除一个FaceSet
      *
-     * @param checkEmpty
-     * @return
+     * @param checkEmpty 0: FaceSet不为空时仍然删除; 1: FaceSet不为空时不删除
+     * @param outerId    要删除的FaceSet标识
+     * @return 请求结果
      */
     public String deleteAFaceSet(Integer checkEmpty, String outerId) {
         String urlDelete = "https://api-cn.faceplusplus.com/facepp/v3/faceset/delete";
@@ -131,8 +149,9 @@ public class FaceService {
     /**
      * 从FaceSet中删除一个face_token
      *
-     * @param faceTokens
-     * @return
+     * @param faceTokens 要删除的face_token
+     * @param outerId    从哪个FaceSet删除
+     * @return 请求结果
      */
     public String removeFromFaceSet(String faceTokens, String outerId) {
         String urlRemove = "https://api-cn.faceplusplus.com/facepp/v3/faceset/removeface";
@@ -144,32 +163,16 @@ public class FaceService {
         return post(formParams, urlRemove);
     }
 
-    /**
-     * 人脸验证
-     *
-     * @param faceToken1
-     * @param faceToken2
-     * @return
-     */
-    public String faceCompare(String faceToken1, String faceToken2) {
-        String urlCompare = "https://api-cn.faceplusplus.com/facepp/v3/compare";
-        // 创建参数队列
-        List<BasicNameValuePair> formParams = new ArrayList<>();
-        formParams.add(new BasicNameValuePair("api_key", apiKey));
-        formParams.add(new BasicNameValuePair("api_secret", apiSecret));
-        formParams.add(new BasicNameValuePair("face_token1", faceToken1));
-        formParams.add(new BasicNameValuePair("face_token2", faceToken2));
-        // 发送请求
-        return post(formParams, urlCompare);
-    }
 
     /**
      * 人脸检索
+     * 被getFaceTokens调用
      *
-     * @param targetFaceToken
-     * @return
+     * @param targetFaceToken 目标face_token
+     * @param outerId         目标FaceSet
+     * @return 请求结果
      */
-    public String faceSearch(String targetFaceToken, String outerId) {
+    private String faceSearch(String targetFaceToken, String outerId) {
         String urlCompare = "https://api-cn.faceplusplus.com/facepp/v3/search";
         // 创建参数队列
         List<BasicNameValuePair> formParams = new ArrayList<>();
@@ -177,6 +180,7 @@ public class FaceService {
         formParams.add(new BasicNameValuePair("api_secret", apiSecret));
         formParams.add(new BasicNameValuePair("face_token", targetFaceToken));
         formParams.add(new BasicNameValuePair("outer_id", outerId));
+        formParams.add(new BasicNameValuePair("return_result_count", "5"));
         // 发送请求
         return post(formParams, urlCompare);
     }
@@ -184,18 +188,37 @@ public class FaceService {
     /**
      * 获取人脸检索结果的face_token数组
      *
-     * @param targetFaceToken
-     * @return
+     * @param targetFaceToken 目标face_token
+     * @param outerId         目标FaceSet
+     * @return 和目标face_token匹配的(结果)face_tokens
      */
-    public ArrayList<String> getfaceTokens(String targetFaceToken, String outerId) {
+    public ArrayList<String> getFaceTokens(String targetFaceToken, String outerId) {
         String resultStr = faceSearch(targetFaceToken, outerId);
         ArrayList<String> faceTokens = new ArrayList<>();
-        Map<String, Object> map = new Gson().fromJson(resultStr, new TypeToken<HashMap<String, Object>>() {}.getType());
+        Map<String, Object> map = new Gson().fromJson(resultStr, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
         ArrayList<Object> results = (ArrayList<Object>) map.get("results");
-        for (Object obj: results) {
+        for (Object obj : results) {
             LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>) obj;
             faceTokens.add(treeMap.get("face_token").toString());
         }
         return faceTokens;
+    }
+
+    /**
+     * 获取FaceSet详情
+     *
+     * @param outerId FaceSet标识
+     * @return 请求结果
+     */
+    public String getDetail(String outerId) {
+        String urlCompare = "https://api-cn.faceplusplus.com/facepp/v3/faceset/getdetail";
+        // 创建参数队列
+        List<BasicNameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("api_key", apiKey));
+        formParams.add(new BasicNameValuePair("api_secret", apiSecret));
+        formParams.add(new BasicNameValuePair("outer_id", outerId));
+        // 发送请求
+        return post(formParams, urlCompare);
     }
 }

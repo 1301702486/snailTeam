@@ -1,5 +1,6 @@
 package com.snail.child.service.releaseInfo;
 
+import com.snail.child.enm.MessageGuo;
 import com.snail.child.enm.MessageXin;
 
 import com.snail.child.model.*;
@@ -8,7 +9,7 @@ import com.snail.child.repository.ParentFindChildRepository;
 import com.snail.child.repository.UserRepository;
 import com.snail.child.service.faceRecog.FaceDetectService;
 import com.snail.child.service.faceRecog.FaceService;
-import com.snail.child.service.user.UserUpdateService;
+import com.snail.child.service.user.UserService;
 import com.snail.child.utils.PhotoUtils;
 import com.snail.child.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.*;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * User: ZhangXinrui
@@ -51,39 +48,41 @@ public class ChildFindParentService {
     FaceService faceService;
 
     @Autowired
-    UserUpdateService userService;
+    UserService userService;
 
     @Autowired
     ParentFindChildRepository parentFindChildRepository;
 
 
-    private final String outerId = "pfcFaceSet";
-
     /**
-     * 添加孩子寻找父母的信息
+     * 发布宝贝寻家信息
      *
-     * @param childFindParent
-     * @param emailAddr
-     * @param file
-     * @return
+     * @param childFindParent 接收前端传过来的发布信息
+     * @param emailAddr       用户id
+     * @param file            用户上传的图片
+     * @return 成功: code=0, data=匹配结果  失败: code!=0
      */
+    @Transactional
     public Result addChildFindParent(ChildFindParent childFindParent, String emailAddr, MultipartFile file) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (!userService.infoComplete(user)) {
-            return ResultUtils.send(MessageXin.INFO_INCOMPLETE);
-        }
         if (user.getChildFindParent() == null) {
             String imageUrl = PhotoUtils.uploadPhoto(file);
             childFindParent.setPhoto(imageUrl);
             // 获取上传的图片的face_token
             String faceToken = detectService.getFaceToken(imageUrl);
+            if (faceToken.equals("No face token")) {
+                return ResultUtils.send(MessageGuo.NO_FACE_DETECTED);
+            }
             childFindParent.setFaceToken(faceToken);
 
             user.setChildFindParent(childFindParent);
             childFindParentRepository.save(childFindParent);
             userRepository.save(user);
-
+            // 获取检索结果
             ArrayList<ParentFindChild> results = getMatchResults(faceToken);
+            // 检索完成后加到childrenFaceSet
+            faceService.addToFaceSet(faceToken, "childrenFaceSet");
+
             if (results != null) {
                 return ResultUtils.send(MessageXin.SUCCESS, results);
             } else {
@@ -95,47 +94,11 @@ public class ChildFindParentService {
     }
 
     /**
-     * 删除家长寻找孩子的发布信息
+     * 查询宝贝寻家信息
      *
-     * @param emailAddr
-     * @return
-     */
-    @Transactional
-    public Result deleteChildFindParent(String emailAddr) {
-        User user = userRepository.findUserByEmailAddr(emailAddr);
-        ChildFindParent childFindParent = user.getChildFindParent();
-        if (childFindParent != null) {
-            // Remove face token from FaceSet
-            faceService.removeFromFaceSet(childFindParent.getFaceToken(), outerId);
-
-            user.setChildFindParent(null);
-            childFindParentRepository.delete(childFindParent);
-            return ResultUtils.send(MessageXin.SUCCESS, userRepository.save(user));
-        } else {
-            return ResultUtils.send(MessageXin.CHILDFINDPARENT_NOT_EXIST);
-        }
-    }
-
-//    /**
-//     * 更新孩子找父母的信息
-//     *
-//     * @param childFindParent
-//     * @param file
-//     * @return
-//     */
-//    public Result updateChildFindParent(ChildFindParent childFindParent, MultipartFile file) {
-//        if (!file.isEmpty()) {
-//            childFindParent.setPhoto(PhotoUtils.uploadPhoto(file));
-//        }
-//        return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.save(childFindParent));
-//    }
-
-    /**
-     * 查询孩子找父母信息
-     *
-     * @param childFindParent
-     * @param page
-     * @return
+     * @param childFindParent 查询条件
+     * @param page            分页
+     * @return 查询结果
      */
     public Result selectChildFindParent(ChildFindParent childFindParent, Pageable page) {
         if (childFindParent != null) {
@@ -158,6 +121,9 @@ public class ChildFindParentService {
                             predicateList.add(criteriaBuilder.like(root.get("homeAddress").get("province"), childFindParent.getHomeAddress().getProvince()));
                             if (!StringUtils.isEmpty(childFindParent.getHomeAddress().getCity())) {
                                 predicateList.add(criteriaBuilder.like(root.get("homeAddress").get("city"), childFindParent.getHomeAddress().getCity()));
+                                if (!StringUtils.isEmpty(childFindParent.getHomeAddress().getDistrict())) {
+                                    predicateList.add(criteriaBuilder.like(root.get("homeAddress").get("district"), childFindParent.getHomeAddress().getDistrict()));
+                                }
                             }
                         }
                     }
@@ -167,6 +133,9 @@ public class ChildFindParentService {
                             predicateList.add(criteriaBuilder.like(root.get("missingAddr").get("province"), childFindParent.getMissingAddress().getCity()));
                             if (!StringUtils.isEmpty(childFindParent.getMissingAddress().getCity())) {
                                 predicateList.add(criteriaBuilder.like(root.get("missingAddress").get("city"), childFindParent.getMissingAddress().getCity()));
+                                if (!StringUtils.isEmpty(childFindParent.getMissingAddress().getDistrict())) {
+                                    predicateList.add(criteriaBuilder.like(root.get("missingAddress").get("district"), childFindParent.getMissingAddress().getDistrict()));
+                                }
                             }
                         }
                     }
@@ -176,22 +145,25 @@ public class ChildFindParentService {
                     return criteriaQuery.getRestriction();
                 }
             };
+            Integer totalPage = childFindParentRepository.findAll(specification).size() / page.getPageSize();
             Page<ChildFindParent> p = childFindParentRepository.findAll(specification, page);
-            return ResultUtils.send(MessageXin.SUCCESS, p);
+            return ResultUtils.send(MessageXin.SUCCESS, totalPage, p);
         } else {
-            return ResultUtils.send(MessageXin.SUCCESS, childFindParentRepository.findAll(page));
+            Integer totalPage = childFindParentRepository.findAll().size() / page.getPageSize();
+            return ResultUtils.send(MessageXin.SUCCESS, totalPage, childFindParentRepository.findAll(page));
         }
     }
 
     /**
-     * 找到所有匹配结果
+     * 根据face_token找到所有匹配结果
      *
-     * @param faceToken
-     * @return
+     * @param faceToken 目标face_token
+     * @return 匹配的发布信息
+     * @author 郭瑞景
      */
     public ArrayList<ParentFindChild> getMatchResults(String faceToken) {
         // 从pfcFaceSet中获取人脸检索结果的face_tokens
-        ArrayList<String> faceTokens = faceService.getfaceTokens(faceToken, outerId);
+        ArrayList<String> faceTokens = faceService.getFaceTokens(faceToken, "pfcFaceSet");
         // 根据face_tokens找到已存在的parent find child发布信息
         ArrayList<ParentFindChild> results = new ArrayList<>();
         for (String token : faceTokens) {
@@ -203,4 +175,44 @@ public class ChildFindParentService {
         return results;
     }
 
+    /**
+     * 根据匹配结果的发布id查找对应的发布信息
+     * id的值由前端传递过来
+     * 最多有5个匹配结果, 少于5个其余id值为-1
+     *
+     * @param id1
+     * @param id2
+     * @param id3
+     * @param id4
+     * @param id5
+     * @return 根据id查到的发布信息
+     */
+    public Result getCfpMatchResult(Integer id1, Integer id2, Integer id3, Integer id4, Integer id5) {
+        ArrayList<ParentFindChild> results = new ArrayList<>();
+        ParentFindChild result1 = parentFindChildRepository.findParentFindChildById(id1);
+        ParentFindChild result2 = parentFindChildRepository.findParentFindChildById(id2);
+        ParentFindChild result3 = parentFindChildRepository.findParentFindChildById(id3);
+        ParentFindChild result4 = parentFindChildRepository.findParentFindChildById(id4);
+        ParentFindChild result5 = parentFindChildRepository.findParentFindChildById(id5);
+        if (result1 != null) {
+            results.add(result1);
+        }
+        if (result2 != null) {
+            results.add(result2);
+        }
+        if (result3 != null) {
+            results.add(result3);
+        }
+        if (result4 != null) {
+            results.add(result4);
+        }
+        if (result5 != null) {
+            results.add(result5);
+        }
+        return ResultUtils.send(MessageXin.SUCCESS, results);
+    }
+
+    public ChildFindParent getCfpById(Integer id) {
+        return childFindParentRepository.findChildFindParentById(id);
+    }
 }

@@ -25,9 +25,9 @@ public class LoginService {
     /**
      * 登录
      *
-     * @param emailAddr
-     * @param password
-     * @return
+     * @param emailAddr 用户邮箱地址
+     * @param password  密码
+     * @return 成功: code=0
      */
     public Result login(String emailAddr, String password) {
         User user = userRepository.findUserByEmailAddr(emailAddr);
@@ -35,18 +35,9 @@ public class LoginService {
             return ResultUtils.send(MessageChen.PASSWORD_WRONG);
         String rightPassword = user.getPassword();
         if (password.equals(rightPassword))
-            return ResultUtils.send(MessageChen.LOGIN_SUCCESS, user);
+            return ResultUtils.send(MessageChen.LOGIN_SUCCESS);
         else
             return ResultUtils.send(MessageChen.PASSWORD_WRONG);
-    }
-
-    /**
-     * 查询所有用户
-     *
-     * @return
-     */
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
     }
 
 }

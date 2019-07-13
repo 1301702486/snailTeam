@@ -82,28 +82,12 @@ public class FaceDetectService {
     }
 
     /**
-     * 根据用户邮箱和发布id获取照片
+     * 获取图片的人脸检测结果
      *
-     * @param emailAddr
-     * @param id
-     * @return
+     * @param imageUrl 图片路径
+     * @return 该图片人脸检测结果(字符串描述)
      */
-    public String getSmcPhotoByEmailAndId(String emailAddr, Integer id) {
-        User user = userRepository.findUserByEmailAddr(emailAddr);
-        if (user != null) {
-            Set<SuspectedMissingChild> children = user.getSuspectedMissingChildren();
-            if (!children.isEmpty()) {
-                for (SuspectedMissingChild child: children) {
-                    if (child.getId().equals(id)) {
-                        return child.getPhoto();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public String getFaceString(String imageUrl) {
+    private String getFaceString(String imageUrl) {
         String url = "https://api-cn.faceplusplus.com/facepp/v3/detect";
         HashMap<String, String> map = new HashMap<>();
         HashMap<String, byte[]> byteMap = new HashMap<>();
@@ -120,11 +104,10 @@ public class FaceDetectService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        String faceToken = getFaceToken(faceString);
         return faceString;
     }
 
-    protected byte[] post(String url, HashMap<String, String> map, HashMap<String, byte[]> fileMap) throws Exception {
+    private byte[] post(String url, HashMap<String, String> map, HashMap<String, byte[]> fileMap) throws Exception {
         HttpURLConnection conne;
         URL url1 = new URL(url);
         conne = (HttpURLConnection) url1.openConnection();
@@ -204,15 +187,18 @@ public class FaceDetectService {
     /**
      * 获取face_token
      *
-     * @param imgUrl
-     * @return
-     * @throws IOException
+     * @param imgUrl 图片路径
+     * @return 该图片检测后的face_token
      */
     public String getFaceToken(String imgUrl) {
         String faceStr = getFaceString(imgUrl);
-        Map<String, Object> map = new Gson().fromJson(faceStr, new TypeToken<HashMap<String, Object>>() {}.getType());
+        Map<String, Object> map = new Gson().fromJson(faceStr, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
         ArrayList<Object> faces = (ArrayList<Object>) map.get("faces");
-        LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>)faces.get(0);
+        if (faces.size() == 0) {
+            return "No face token";
+        }
+        LinkedTreeMap<String, Object> treeMap = (LinkedTreeMap<String, Object>) faces.get(0);
         return treeMap.get("face_token").toString();
     }
 }

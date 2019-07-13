@@ -1,6 +1,7 @@
 package com.snail.child.config;
 
 
+import com.snail.child.res.Url;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,13 +21,11 @@ public class SwaggerConfig {
 
     @Bean
     public Docket customDocket() {
-        Contact contact = new Contact("zhengz", "zhengflf@163.com", "zhengflf@163.com");
-        ApiInfo apiInfo =  new ApiInfoBuilder()
-                .title("回顾前两周所学内容")
-                .description("细化与了解")
+        Contact contact = new Contact("流浪宝贝", Url.baseUrl + Url.webMapping + "/index.html", "liulangbaobei@yeah.net");
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("流浪宝贝接口测试")
                 .contact(contact)
-                .version("1.0")
                 .build();
-          return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo);
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo);
     }
 }

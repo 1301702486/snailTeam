@@ -3,12 +3,7 @@ package com.snail.child.controller.user;
 import com.snail.child.model.Result;
 import com.snail.child.service.user.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * Author: 陈一
@@ -21,51 +16,40 @@ public class RegisterController {
     @Autowired
     RegisterService service;
 
+    /**
+     * 发送验证链接
+     *
+     * @param emailAddr 注册邮箱地址
+     * @param password  密码
+     * @return 成功: code=0
+     */
+    @PostMapping("/sendLink")
+    public Result sendLink(String emailAddr, String password) {
+        return service.sendConfirmLink(emailAddr, password);
+    }
 
+    /**
+     * 发送邮件验证码
+     *
+     * @param emailAddr 邮箱地址
+     * @return 成功: code=0
+     * @author 郭瑞景
+     */
+    @PostMapping("/sendCode")
+    public Result sendCode(String emailAddr) {
+        return service.sendCode(emailAddr);
+    }
+
+    /**
+     * 注册
+     *
+     * @param emailAddr 邮箱地址
+     * @param password  密码
+     * @return 成功: code=0
+     * @author 郭瑞景
+     */
     @PostMapping("/register")
     public Result register(String emailAddr, String password) {
         return service.register(emailAddr, password);
     }
-
-    /**
-     * 注册验证
-     *
-     * @param model
-     * @param emailAddr
-     * @return
-     */
-    public String registerConfirm(Model model,
-                                  @RequestParam(value = "emailAddr") String emailAddr,
-                                  @RequestParam(value = "password") String password) {
-        Result result = service.registerConfirm(emailAddr, password);
-        model.addAttribute("info", result.getMessage());
-        return "index";
-    }
-
-    /**
-     * 添加带头像的用户，以便测试“登录成功”
-     *
-     * @param emailAddr
-     * @param password
-     * @param file
-     * @return
-     */
-    @PostMapping("/testForLoginSuccess")
-    public Result testForLoginSuccess(@RequestParam(value = "emailAddr") String emailAddr,
-                                      @RequestParam(value = "password") String password,
-                                      @RequestParam(value = "headPortrait") MultipartFile file) {
-        return service.testForLoginSuccess(emailAddr, password, file);
-    }
-
-//    /**
-//     * 删除用户
-//     *
-//     * @param emailAddr
-//     * @return
-//     */
-//    @RequestMapping("/deleteUser")
-//    public Result deleteUser(@RequestParam(value = "emailAddr") String emailAddr) {
-//        return service.deleteUser(emailAddr);
-//    }
-
 }

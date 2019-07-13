@@ -10,8 +10,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Date: 2019/6/27
  * Description: No Description
  */
-public interface ParentFindChildRepository extends JpaRepository<ParentFindChild,Integer>, JpaSpecificationExecutor<ParentFindChild> {
+public interface ParentFindChildRepository extends JpaRepository<ParentFindChild, Integer>, JpaSpecificationExecutor<ParentFindChild> {
     ParentFindChild findParentFindChildById(Integer id);
+
     ParentFindChild findParentFindChildByFaceToken(String faceToken);
 
 }

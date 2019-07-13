@@ -30,15 +30,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/v2/api-docs/**")
                 .addResourceLocations("classpath:/META-INF/resources/v2/api-docs/");
 
+        // 静态资源路径映射
+
         String imagePathPattern = "/" + Url.imageMapping + "/**";
         registry.addResourceHandler(imagePathPattern)
-                .addResourceLocations("file:C:/images/")
-                .addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("file:C:/images/");
 
         String webPathPattern = "/" + Url.webMapping + "/**";
         registry.addResourceHandler(webPathPattern)
-                .addResourceLocations("file:C:/webpages/")
-                .addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("file:C:/webpages/");
 
     }
 

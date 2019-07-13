@@ -2,6 +2,7 @@ package com.snail.child.controller.faceRecog;
 
 import com.snail.child.service.faceRecog.FaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +34,10 @@ public class FaceSetController {
     @PostMapping("/removeFromFaceSet")
     public String removeFromFaceSet(String faceTokens, String outerId) {
         return faceService.removeFromFaceSet(faceTokens, outerId);
+    }
+
+    @GetMapping("/getFaceSetDetail")
+    public String getFaceSetDetail(String outerId) {
+        return faceService.getDetail(outerId);
     }
 }
